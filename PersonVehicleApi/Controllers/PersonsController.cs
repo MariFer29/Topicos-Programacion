@@ -10,10 +10,14 @@ namespace PersonVehicleApi.Controllers
     [Route("api/[controller]")]
     public class PersonsController : ControllerBase
     {
-        private readonly AppDbContext _db;
-        public PersonsController(AppDbContext db) { _db = db; }
+        private readonly AppDbContext _db; // Contexto de base de datos
 
-        // GET: api/persons
+        public PersonsController(AppDbContext db)
+        {
+            _db = db;
+        }
+
+        // GET: api/persons — Obtiene todas las personas
         [HttpGet]
         public async Task<IActionResult> GetPersons()
         {
@@ -22,11 +26,12 @@ namespace PersonVehicleApi.Controllers
         }
 
         // GET: api/persons/by-identification/{identification}
+        // Consulta una persona por su identificación
         [HttpGet("by-identification/{identification}")]
         public async Task<IActionResult> GetByIdentification(string identification)
         {
             var person = await _db.Persons
-                .Include(p => p.Vehicles)
+                .Include(p => p.Vehicles) // Incluye los vehículos de la persona
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Identification == identification);
 
@@ -34,14 +39,19 @@ namespace PersonVehicleApi.Controllers
             return Ok(person);
         }
 
-        // POST: api/persons
+        // POST: api/persons — Crear una nueva persona
         [HttpPost]
         public async Task<IActionResult> CreatePerson([FromBody] CreatePersonDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto?.Identification)) return BadRequest("Identification is required.");
+            // Validación básica
+            if (string.IsNullOrWhiteSpace(dto?.Identification))
+                return BadRequest("Identification is required.");
+
+            // Verifica que no exista otra persona con la misma identificación
             if (await _db.Persons.AnyAsync(p => p.Identification == dto.Identification))
                 return Conflict("Person with this identification already exists.");
 
+            // Crear nuevo objeto persona
             var person = new Person
             {
                 Identification = dto.Identification,
@@ -58,12 +68,14 @@ namespace PersonVehicleApi.Controllers
         }
 
         // PUT: api/persons/{identification}
+        // Actualiza la persona según su identificación
         [HttpPut("{identification}")]
         public async Task<IActionResult> UpdatePerson(string identification, [FromBody] UpdatePersonDto dto)
         {
             var person = await _db.Persons.FirstOrDefaultAsync(p => p.Identification == identification);
             if (person == null) return NotFound();
 
+            // Actualiza sólo los campos enviados
             person.FirstName = dto.FirstName ?? person.FirstName;
             person.LastName = dto.LastName ?? person.LastName;
             person.Email = dto.Email ?? person.Email;
@@ -74,4 +86,5 @@ namespace PersonVehicleApi.Controllers
         }
     }
 }
+
 
