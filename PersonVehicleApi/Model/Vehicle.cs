@@ -9,7 +9,7 @@ namespace PersonVehicleApi.Model
         public int Id { get; set; }
 
         [Required]
-        public string Plate { get; set; } // ejemplo: ABC-123
+        public string Plate { get; set; }
 
         public string Make { get; set; }
         public string Model { get; set; }
