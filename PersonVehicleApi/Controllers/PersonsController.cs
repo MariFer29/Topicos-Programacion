@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PersonVehicleApi.DA;
-using PersonVehicleApi.Model;
+using PersonVehicleApi.BL;
 using PersonVehicleApi.Model.Dtos;
 
 namespace PersonVehicleApi.Controllers
@@ -10,18 +8,19 @@ namespace PersonVehicleApi.Controllers
     [Route("api/[controller]")]
     public class PersonsController : ControllerBase
     {
-        private readonly AppDbContext _db; // Contexto de base de datos
+        private readonly PersonsBL _bl; // Servicio de lógica de negocio
 
-        public PersonsController(AppDbContext db)
+        // Inyección del servicio BL
+        public PersonsController(PersonsBL bl)
         {
-            _db = db;
+            _bl = bl;
         }
 
         // GET: api/persons — Obtiene todas las personas
         [HttpGet]
         public async Task<IActionResult> GetPersons()
         {
-            var persons = await _db.Persons.AsNoTracking().ToListAsync();
+            var persons = await _bl.GetAllPersonsAsync();
             return Ok(persons);
         }
 
@@ -30,12 +29,11 @@ namespace PersonVehicleApi.Controllers
         [HttpGet("by-identification/{identification}")]
         public async Task<IActionResult> GetByIdentification(string identification)
         {
-            var person = await _db.Persons
-                .Include(p => p.Vehicles) // Incluye los vehículos de la persona
-                .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.Identification == identification);
+            var person = await _bl.GetByIdentificationAsync(identification);
 
-            if (person == null) return NotFound();
+            if (person == null)
+                return NotFound("Person not found");
+
             return Ok(person);
         }
 
@@ -43,28 +41,16 @@ namespace PersonVehicleApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePerson([FromBody] CreatePersonDto dto)
         {
-            // Validación básica
-            if (string.IsNullOrWhiteSpace(dto?.Identification))
-                return BadRequest("Identification is required.");
+            var result = await _bl.CreatePersonAsync(dto);
 
-            // Verifica que no exista otra persona con la misma identificación
-            if (await _db.Persons.AnyAsync(p => p.Identification == dto.Identification))
-                return Conflict("Person with this identification already exists.");
+            if (!result.Success)
+                return BadRequest(result.Message);
 
-            // Crear nuevo objeto persona
-            var person = new Person
-            {
-                Identification = dto.Identification,
-                FirstName = dto.FirstName,
-                LastName = dto.LastName,
-                Email = dto.Email,
-                Phone = dto.Phone
-            };
-
-            _db.Persons.Add(person);
-            await _db.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetByIdentification), new { identification = person.Identification }, person);
+            return CreatedAtAction(
+                nameof(GetByIdentification),
+                new { identification = result.CreatedPerson!.Identification },
+                result.CreatedPerson
+            );
         }
 
         // PUT: api/persons/{identification}
@@ -72,16 +58,11 @@ namespace PersonVehicleApi.Controllers
         [HttpPut("{identification}")]
         public async Task<IActionResult> UpdatePerson(string identification, [FromBody] UpdatePersonDto dto)
         {
-            var person = await _db.Persons.FirstOrDefaultAsync(p => p.Identification == identification);
-            if (person == null) return NotFound();
+            var result = await _bl.UpdatePersonAsync(identification, dto);
 
-            // Actualiza sólo los campos enviados
-            person.FirstName = dto.FirstName ?? person.FirstName;
-            person.LastName = dto.LastName ?? person.LastName;
-            person.Email = dto.Email ?? person.Email;
-            person.Phone = dto.Phone ?? person.Phone;
+            if (!result.Success)
+                return NotFound(result.Message);
 
-            await _db.SaveChangesAsync();
             return NoContent();
         }
     }
