@@ -23,6 +23,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Registro de la Capa BL (Business Logic)
 builder.Services.AddScoped<PersonsBL>();
 builder.Services.AddScoped<VehiclesBL>();
+builder.Services.AddScoped<OwnersBL>();
 
 
 var app = builder.Build();
