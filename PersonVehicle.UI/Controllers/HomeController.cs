@@ -94,6 +94,29 @@ namespace PersonVehicle.UI.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateVehicle(CreateVehicleDto vehicle)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Por favor complete todos los campos requeridos correctamente.";
+                return RedirectToAction("AllVehicles");
+            }
+
+            var success = await _apiService.CreateVehicleAsync(vehicle);
+            
+            if (success)
+            {
+                TempData["Success"] = "Vehículo creado exitosamente.";
+            }
+            else
+            {
+                TempData["Error"] = "Error al crear el vehículo. Verifique que la placa no exista y que la identificación del propietario sea válida.";
+            }
+
+            return RedirectToAction("AllVehicles");
+        }
+
         public async Task<IActionResult> EditPerson(string identification)
         {
             var person = await _apiService.GetPersonByIdentificationAsync(identification);
