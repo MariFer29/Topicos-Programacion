@@ -1,0 +1,79 @@
+@model PersonVehicle.UI.Models.Person
+
+@{
+    ViewData["Title"] = "Editar Persona";
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h4>?? Editar Persona - @Model.Identification</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdatePerson" asp-route-identification="@Model.Identification" method="post">
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">Nombre *</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" value="@Model.FirstName" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" value="@Model.LastName">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" value="@Model.Email">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Teléfono</label>
+                            <input type="text" class="form-control" id="phone" name="phone" value="@Model.Phone">
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-secondary me-md-2">?? Volver</a>
+                            <button type="submit" class="btn btn-warning">?? Actualizar Persona</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            @if (Model.Vehicles != null && Model.Vehicles.Any())
+            {
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5>?? Vehículos de @Model.FullName</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Placa</th>
+                                        <th>Marca</th>
+                                        <th>Modelo</th>
+                                        <th>Año</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var vehicle in Model.Vehicles)
+                                    {
+                                        <tr>
+                                            <td>@vehicle.Plate</td>
+                                            <td>@vehicle.Make</td>
+                                            <td>@vehicle.Model</td>
+                                            <td>@vehicle.Year</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

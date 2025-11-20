@@ -1,0 +1,207 @@
+@{
+    ViewData["Title"] = "Sistema de Gestión - Personas y Vehículos";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-4 text-center mb-4">?? Sistema de Gestión - Personas y Vehículos</h1>
+            
+            <!-- Mensajes de resultado -->
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>? Éxito:</strong> @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>? Error:</strong> @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <!-- Resultados de búsquedas -->
+            @if (TempData["PersonResult"] != null)
+            {
+                var person = System.Text.Json.JsonSerializer.Deserialize<PersonVehicle.UI.Models.Person>(TempData["PersonResult"].ToString());
+                <div class="alert alert-info">
+                    <h5>?? Información de la Persona:</h5>
+                    <p><strong>Identificación:</strong> @person.Identification</p>
+                    <p><strong>Nombre:</strong> @person.FullName</p>
+                    <p><strong>Email:</strong> @person.Email</p>
+                    <p><strong>Teléfono:</strong> @person.Phone</p>
+                    @if (person.Vehicles != null && person.Vehicles.Any())
+                    {
+                        <p><strong>Vehículos:</strong></p>
+                        <ul>
+                            @foreach (var vehicle in person.Vehicles)
+                            {
+                                <li>@vehicle.Plate - @vehicle.Make @vehicle.Model (@vehicle.Year)</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            }
+
+            @if (TempData["VehiclesResult"] != null)
+            {
+                var vehicles = System.Text.Json.JsonSerializer.Deserialize<List<PersonVehicle.UI.Models.Vehicle>>(TempData["VehiclesResult"].ToString());
+                <div class="alert alert-info">
+                    <h5>?? Vehículos Encontrados:</h5>
+                    @foreach (var vehicle in vehicles)
+                    {
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <strong>@vehicle.Plate</strong> - @vehicle.Make @vehicle.Model (@vehicle.Year)
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Menú Principal -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>?? Gestión de Personas</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Consultar persona por identificación -->
+                    <div class="mb-3">
+                        <h6>?? Consultar Persona por Identificación</h6>
+                        <form asp-action="SearchPersonByIdentification" method="post" class="d-flex">
+                            <input type="text" name="identification" class="form-control me-2" placeholder="Ingrese identificación" required>
+                            <button type="submit" class="btn btn-outline-primary">Buscar</button>
+                        </form>
+                    </div>
+
+                    <hr>
+
+                    <!-- Agregar persona -->
+                    <div class="mb-3">
+                        <h6>? Agregar Nueva Persona</h6>
+                        <button class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#addPersonForm">
+                            Mostrar Formulario
+                        </button>
+                        <div class="collapse mt-3" id="addPersonForm">
+                            <form asp-action="CreatePerson" method="post">
+                                <div class="mb-2">
+                                    <input type="text" name="identification" class="form-control" placeholder="Identificación *" required>
+                                </div>
+                                <div class="mb-2">
+                                    <input type="text" name="firstName" class="form-control" placeholder="Nombre *" required>
+                                </div>
+                                <div class="mb-2">
+                                    <input type="text" name="lastName" class="form-control" placeholder="Apellido">
+                                </div>
+                                <div class="mb-2">
+                                    <input type="email" name="email" class="form-control" placeholder="Email">
+                                </div>
+                                <div class="mb-2">
+                                    <input type="text" name="phone" class="form-control" placeholder="Teléfono">
+                                </div>
+                                <button type="submit" class="btn btn-success">Crear Persona</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4>?? Gestión de Vehículos</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Consultar vehículos por dueño -->
+                    <div class="mb-3">
+                        <h6>?? Consultar Vehículos por Identificación del Propietario</h6>
+                        <form asp-action="SearchVehiclesByOwner" method="post" class="d-flex">
+                            <input type="text" name="ownerIdentification" class="form-control me-2" placeholder="Identificación del propietario" required>
+                            <button type="submit" class="btn btn-outline-info">Buscar</button>
+                        </form>
+                    </div>
+
+                    <hr>
+
+                    <!-- Ver todos los vehículos -->
+                    <div class="mb-3">
+                        <h6>?? Listar Todos los Vehículos</h6>
+                        <a asp-action="AllVehicles" class="btn btn-info">Ver Todos los Vehículos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de todas las personas -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h4>?? Lista de Todas las Personas</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Persons != null && ((List<PersonVehicle.UI.Models.Person>)ViewBag.Persons).Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Identificación</th>
+                                        <th>Nombre Completo</th>
+                                        <th>Email</th>
+                                        <th>Teléfono</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var person in (List<PersonVehicle.UI.Models.Person>)ViewBag.Persons)
+                                    {
+                                        <tr>
+                                            <td>@person.Identification</td>
+                                            <td>@person.FullName</td>
+                                            <td>@person.Email</td>
+                                            <td>@person.Phone</td>
+                                            <td>
+                                                <a asp-action="EditPerson" asp-route-identification="@person.Identification" 
+                                                   class="btn btn-sm btn-warning">?? Editar</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <p>No hay personas registradas en el sistema.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+}
