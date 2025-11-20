@@ -24,17 +24,17 @@ namespace PersonVehicleApi.Controllers
             return Ok(vehicles);
         }
 
-        // GET: api/vehicles/by-owner/{identification}
-        // Obtiene vehículos mediante la identificación del dueño
-        [HttpGet("by-owner/{identification}")]
-        public async Task<IActionResult> GetByOwner(string identification)
+        // GET: api/vehicles/owner-by-plate/{plate}
+        // Obtiene la persona propietaria mediante la placa del vehículo
+        [HttpGet("owner-by-plate/{plate}")]
+        public async Task<IActionResult> GetOwnerByPlate(string plate)
         {
-            var result = await _bl.GetByOwnerAsync(identification);
+            var result = await _bl.GetOwnerByPlateAsync(plate);
 
             if (!result.Success)
                 return NotFound(result.Message);
 
-            return Ok(result.Vehicles);
+            return Ok(result.Owner);
         }
 
         // POST: api/vehicles — Crear un nuevo vehículo
@@ -60,6 +60,32 @@ namespace PersonVehicleApi.Controllers
                 return NotFound(result.Message);
 
             return NoContent();
+        }
+
+        // PUT: api/vehicles/{plate}/change-owner
+        // Cambia el dueño del vehículo
+        [HttpPut("{plate}/change-owner")]
+        public async Task<IActionResult> UpdateOwner(string plate, [FromBody] UpdateVehicleOwnerDto dto)
+        {
+            var result = await _bl.UpdateVehicleOwnerAsync(plate, dto.NewOwnerIdentification);
+
+            if (!result.Success)
+                return BadRequest(result.Message);
+
+            return Ok(result.Message);
+        }
+
+        // DELETE: api/vehicles/{plate}
+        // Elimina un vehículo por su placa
+        [HttpDelete("{plate}")]
+        public async Task<IActionResult> DeleteVehicle(string plate)
+        {
+            var result = await _bl.DeleteVehicleAsync(plate);
+
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            return Ok(result.Message);
         }
     }
 }

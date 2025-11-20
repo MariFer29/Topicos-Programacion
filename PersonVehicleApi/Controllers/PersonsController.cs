@@ -65,6 +65,19 @@ namespace PersonVehicleApi.Controllers
 
             return NoContent();
         }
+
+        // DELETE: api/persons/{identification}
+        // Elimina una persona y sus vehículos asociados
+        [HttpDelete("{identification}")]
+        public async Task<IActionResult> DeletePerson(string identification)
+        {
+            var result = await _bl.DeletePersonAsync(identification);
+
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            return Ok(result.Message);
+        }
     }
 }
 

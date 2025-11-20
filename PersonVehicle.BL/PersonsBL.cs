@@ -18,7 +18,10 @@ namespace PersonVehicleApi.BL
         // Método para obtener todas las personas
         public async Task<List<Person>> GetAllPersonsAsync()
         {
-            return await _db.Persons.AsNoTracking().ToListAsync();
+            return await _db.Persons
+                .Include(p => p.Vehicles)  
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         // Método para obtener una persona por identificación
@@ -73,6 +76,22 @@ namespace PersonVehicleApi.BL
 
             await _db.SaveChangesAsync();
             return (true, "Person updated successfully");
+        }
+
+        // Eliminar una persona por identificación
+        public async Task<(bool Success, string Message)> DeletePersonAsync(string identification)
+        {
+            // Buscar persona en la base de datos
+            var person = await _db.Persons.FirstOrDefaultAsync(p => p.Identification == identification);
+
+            if (person == null)
+                return (false, "Person not found");
+
+            // EF Core eliminará automáticamente los vehículos por la regla Cascade
+            _db.Persons.Remove(person);
+            await _db.SaveChangesAsync();
+
+            return (true, "Person deleted successfully");
         }
     }
 }
