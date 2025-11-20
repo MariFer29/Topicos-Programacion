@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonVehicle.DA", "PersonV
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonVehicle.Model", "PersonVehicle.Model\PersonVehicle.Model.csproj", "{EABE02CC-699B-4438-AABC-347AF1478014}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonVehicle.UI", "PersonVehicle.UI\PersonVehicle.UI.csproj", "{5E8B916B-5479-4577-A51E-A0FCE254C8DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{EABE02CC-699B-4438-AABC-347AF1478014}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EABE02CC-699B-4438-AABC-347AF1478014}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EABE02CC-699B-4438-AABC-347AF1478014}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E8B916B-5479-4577-A51E-A0FCE254C8DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E8B916B-5479-4577-A51E-A0FCE254C8DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E8B916B-5479-4577-A51E-A0FCE254C8DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E8B916B-5479-4577-A51E-A0FCE254C8DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
