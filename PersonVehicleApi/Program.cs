@@ -5,7 +5,12 @@ using PersonVehicleApi.BL;
 var builder = WebApplication.CreateBuilder(args);
 
 // Agrega los servicios necesarios para usar controladores (API)
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Configurar el manejo de ciclos de referencia para evitar errores al serializar
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 // Herramientas para documentar y explorar la API (Swagger)
 builder.Services.AddEndpointsApiExplorer();

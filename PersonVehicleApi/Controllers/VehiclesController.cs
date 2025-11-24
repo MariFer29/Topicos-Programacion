@@ -24,6 +24,19 @@ namespace PersonVehicleApi.Controllers
             return Ok(vehicles);
         }
 
+        // GET: api/vehicles/by-owner/{identification}
+        // Obtiene todos los vehículos de un propietario por su identificación
+        [HttpGet("by-owner/{identification}")]
+        public async Task<IActionResult> GetVehiclesByOwner(string identification)
+        {
+            var result = await _bl.GetByOwnerAsync(identification);
+
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            return Ok(result.Vehicles);
+        }
+
         // GET: api/vehicles/owner-by-plate/{plate}
         // Obtiene la persona propietaria mediante la placa del vehículo
         [HttpGet("owner-by-plate/{plate}")]

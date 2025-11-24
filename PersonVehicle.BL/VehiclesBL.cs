@@ -33,6 +33,7 @@ namespace PersonVehicleApi.BL
                 return (false, "Owner not found", null);
 
             var vehicles = await _db.Vehicles
+                .Include(v => v.Owner) // incluir información del dueño
                 .Where(v => v.OwnerId == owner.Id)
                 .AsNoTracking()
                 .ToListAsync();
