@@ -19,7 +19,6 @@ namespace PersonVehicleApi.Model
         public int OwnerId { get; set; } // ID de la persona propietaria
 
         [ForeignKey("OwnerId")]
-        [JsonIgnore] // Se ignora en JSON para evitar ciclos
         public Person Owner { get; set; } // Referencia al dueño del vehículo
     }
 }
