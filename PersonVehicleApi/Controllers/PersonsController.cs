@@ -1,6 +1,8 @@
+using PersonVehicle.BL;
+using PersonVehicle.Model;
 using Microsoft.AspNetCore.Mvc;
-using PersonVehicleApi.BL;
-using PersonVehicleApi.Model.Dtos;
+using Microsoft.AspNetCore.Rewrite;
+using static System.Collections.Specialized.BitVector32;
 
 namespace PersonVehicleApi.Controllers
 {
@@ -8,77 +10,83 @@ namespace PersonVehicleApi.Controllers
     [Route("api/[controller]")]
     public class PersonsController : ControllerBase
     {
-        private readonly PersonsBL _bl; // Servicio de lógica de negocio
+        private readonly IAdministradorDePersons _adpersonRepository;
 
         // Inyección del servicio BL
-        public PersonsController(PersonsBL bl)
+        public PersonsController(IAdministradorDePersons adpersonRepository)
         {
-            _bl = bl;
+            _adpersonRepository = adpersonRepository;
         }
 
         // GET: api/persons — Obtiene todas las personas
-        [HttpGet]
+        [HttpGet("/api/ServicioDePersonasVehiculos/Personas/ObtengaListaDePersonas")]
         public async Task<IActionResult> GetPersons()
         {
-            var persons = await _bl.GetAllPersonsAsync();
+            var persons = await _adpersonRepository.ObtengaListaPersonsAsync();
             return Ok(persons);
         }
 
         // GET: api/persons/by-identification/{identification}
         // Consulta una persona por su identificación
-        [HttpGet("by-identification/{identification}")]
-        public async Task<IActionResult> GetByIdentification(string identification)
+        [HttpGet("/api/ServicioDePersonasVehiculos/Personas/ObtengaListaDePersonas/PorIdentificacion/{identification}")]
+        public async Task<IActionResult> GetByIdentification(int identification)
         {
-            var person = await _bl.GetByIdentificationAsync(identification);
-
-            if (person == null)
-                return NotFound("Person not found");
-
-            return Ok(person);
+            try
+            {
+                var result = await _adpersonRepository.ObtenerListaxIdentificationAsync(identification);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); //message detalle error
+            }
         }
 
         // POST: api/persons — Crear una nueva persona
-        [HttpPost]
-        public async Task<IActionResult> CreatePerson([FromBody] CreatePersonDto dto)
+        [HttpPost("/api/ServicioDePersonasVehiculos/Personas/AgregueNuevaPersona")]
+        public async Task<IActionResult> CreatePerson([FromBody] Persons person)
         {
-            var result = await _bl.CreatePersonAsync(dto);
-
-            if (!result.Success)
-                return BadRequest(result.Message);
-
-            return CreatedAtAction(
-                nameof(GetByIdentification),
-                new { identification = result.CreatedPerson!.Identification },
-                result.CreatedPerson
-            );
+            try
+            {
+                var result = await _adpersonRepository.AgreguePersonAsync(person);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); //message detalle error
+            }
         }
 
         // PUT: api/persons/{identification}
         // Actualiza la persona según su identificación
-        [HttpPut("{identification}")]
-        public async Task<IActionResult> UpdatePerson(string identification, [FromBody] UpdatePersonDto dto)
+        [HttpPut("/api/ServicioDePersonasVehiculos/Personas/ModifiqueLaPersona/{identification}")]
+        public async Task<IActionResult> UpdatePerson(int identification, [FromBody] Persons person)
         {
-            var result = await _bl.UpdatePersonAsync(identification, dto);
-
-            if (!result.Success)
-                return NotFound(result.Message);
-
-            return NoContent();
+            try
+            {
+                var result = await _adpersonRepository.ActualizarPersonAsync(identification, person);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); //message detalle error
+            }
         }
 
         // DELETE: api/persons/{identification}
         // Elimina una persona y sus vehículos asociados
-        [HttpDelete("{identification}")]
-        public async Task<IActionResult> DeletePerson(string identification)
+        [HttpDelete("/api/ServicioDePersonasVehiculos/Personas/ElimineLaPersona/{identification}")]
+        public async Task<IActionResult> DeletePerson(int identification)
         {
-            var result = await _bl.DeletePersonAsync(identification);
-
-            if (!result.Success)
-                return NotFound(result.Message);
-
-            return Ok(result.Message);
+            try
+            {
+                var result = await _adpersonRepository.EliminarPersonAsync(identification);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message); //message detalle error
+            }
         }
     }
 }
-
-

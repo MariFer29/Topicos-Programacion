@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using PersonVehicleApi.DA;
-using PersonVehicleApi.BL; 
+using PersonVehicle.BL;
+using PersonVehicle.DA;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,9 +12,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Obtiene la cadena de conexión desde appsettings.json
+/*CODIGO MAFER
 // Si no existe, usa una cadena de conexión por defecto
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                       ?? "Server=(localdb)\\mssqllocaldb;Database=PersonVehicleDb;Trusted_Connection=True;";
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                       //?? "Server=(localdb)\\mssqllocaldb;Database=PersonVehicleDb;Trusted_Connection=True;";
 
 // Registro del DbContext para que la aplicación pueda usar EF Core
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -23,6 +24,24 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Registro de la Capa BL (Business Logic)
 builder.Services.AddScoped<PersonsBL>();
 builder.Services.AddScoped<VehiclesBL>();
+CODIGO MAFER*/
+
+
+
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); //Conexion
+
+builder.Services.AddDbContext<PersonVehicle.DA.AppDbContext>(options =>
+    options.UseSqlServer(connectionString)); // en Base de Datos
+
+//builder.Services.AddDbContext<PersonVehicle.DA.AppDbContext>(options =>
+//    options.UseInMemoryDatabase("ProyTAP")); //En Memoria
+
+
+builder.Services.AddScoped<PersonVehicle.BL.IOwnerRepository, PersonVehicle.DA.OwnerRepository>();
+builder.Services.AddScoped<PersonVehicle.BL.IPersonRepository, PersonVehicle.DA.PersonRepository>();
+builder.Services.AddScoped<PersonVehicle.BL.IVehicleRepository, PersonVehicle.DA.VehicleRepository>();
+builder.Services.AddScoped<PersonVehicle.BL.IAdministradorDePersons, PersonVehicle.BL.AdministradorDePersons>();
+builder.Services.AddScoped<PersonVehicle.BL.IAdministradorDeVehicles, PersonVehicle.BL.AdministradorDeVehicles>();
 
 
 var app = builder.Build();
@@ -43,7 +62,9 @@ app.UseAuthorization();
 // Mapea automáticamente los controladores a sus rutas
 app.MapControllers();
 
-// Crear un scope temporal para ejecutar migraciones y datos iniciales
+
+/*CODIGO MAFER
+//Crear un scope temporal para ejecutar migraciones y datos iniciales
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -66,7 +87,7 @@ using (var scope = app.Services.CreateScope())
         db.Persons.Add(p);
 
         // Vehículos de ejemplo asociados a la persona
-        db.Vehicles.Add(new PersonVehicleApi.Model.Vehicle
+        db.Vehicles.Add(new PersonVehicle.Model.Vehicle
         {
             Plate = "ABC-123",
             Make = "Toyota",
@@ -75,7 +96,7 @@ using (var scope = app.Services.CreateScope())
             Owner = p
         });
 
-        db.Vehicles.Add(new PersonVehicleApi.Model.Vehicle
+        db.Vehicles.Add(new PersonVehicle.Model.Vehicle
         {
             Plate = "XYZ-999",
             Make = "Honda",
@@ -86,7 +107,7 @@ using (var scope = app.Services.CreateScope())
 
         db.SaveChanges(); // Guarda los datos iniciales en la base
     }
-}
+}*/
 
 app.Run(); // Ejecuta la aplicación
 

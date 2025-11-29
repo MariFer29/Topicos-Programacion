@@ -24,17 +24,17 @@ namespace PersonVehicle.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SearchPersonByIdentification(string identification)
+        public async Task<IActionResult> SearchPersonByIdentification(int identification, Person person)
         {
-            if (string.IsNullOrWhiteSpace(identification))
+            if (person.Identification.ToString().Length != 9)
             {
                 TempData["Error"] = "Por favor ingrese una identificación.";
                 return RedirectToAction("Index");
             }
 
-            var person = await _apiService.GetPersonByIdentificationAsync(identification);
+            var personIDe = await _apiService.GetPersonByIdentificationAsync(identification);
             
-            if (person == null)
+            if (personIDe == null)
             {
                 TempData["Error"] = $"No se encontró ninguna persona con identificación: {identification}";
             }
@@ -47,32 +47,32 @@ namespace PersonVehicle.UI.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SearchVehiclesByOwner(string ownerIdentification)
-        {
-            if (string.IsNullOrWhiteSpace(ownerIdentification))
-            {
-                TempData["Error"] = "Por favor ingrese una identificación.";
-                return RedirectToAction("Index");
-            }
+        //[HttpPost]
+        //public async Task<IActionResult> SearchVehiclesByOwner(string ownerIdentification)
+        //{
+        //    if (string.IsNullOrWhiteSpace(ownerIdentification))
+        //    {
+        //        TempData["Error"] = "Por favor ingrese una identificación.";
+        //        return RedirectToAction("Index");
+        //    }
 
-            var vehicles = await _apiService.GetVehiclesByOwnerAsync(ownerIdentification);
+        //    var vehicles = await _apiService.GetVehiclesByOwnerAsync(ownerIdentification);
             
-            if (vehicles == null || !vehicles.Any())
-            {
-                TempData["Error"] = $"No se encontraron vehículos para la identificación: {ownerIdentification}";
-            }
-            else
-            {
-                TempData["VehiclesResult"] = System.Text.Json.JsonSerializer.Serialize(vehicles);
-                TempData["Success"] = $"Se encontraron {vehicles.Count} vehículo(s).";
-            }
+        //    if (vehicles == null || !vehicles.Any())
+        //    {
+        //        TempData["Error"] = $"No se encontraron vehículos para la identificación: {ownerIdentification}";
+        //    }
+        //    else
+        //    {
+        //        TempData["VehiclesResult"] = System.Text.Json.JsonSerializer.Serialize(vehicles);
+        //        TempData["Success"] = $"Se encontraron {vehicles.Count} vehículo(s).";
+        //    }
 
-            return RedirectToAction("Index");
-        }
+        //    return RedirectToAction("Index");
+        //}
 
         [HttpPost]
-        public async Task<IActionResult> CreatePerson(CreatePersonDto person)
+        public async Task<IActionResult> CreatePerson(Person person, int identification)
         {
             if (!ModelState.IsValid)
             {
@@ -80,22 +80,19 @@ namespace PersonVehicle.UI.Controllers
                 return RedirectToAction("Index");
             }
 
-            var success = await _apiService.CreatePersonAsync(person);
+            var success = await _apiService.CreatePersonAsync(person, identification);
             
             if (success)
-            {
                 TempData["Success"] = "Persona creada exitosamente.";
-            }
+            
             else
-            {
                 TempData["Error"] = "Error al crear la persona. Verifique que la identificación no exista.";
-            }
 
             return RedirectToAction("Index");
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateVehicle(CreateVehicleDto vehicle)
+        public async Task<IActionResult> CreateVehicle(Vehicle vehicle)
         {
             if (!ModelState.IsValid)
             {
@@ -117,7 +114,7 @@ namespace PersonVehicle.UI.Controllers
             return RedirectToAction("AllVehicles");
         }
 
-        public async Task<IActionResult> EditPerson(string identification)
+        public async Task<IActionResult> EditPerson(int identification)
         {
             var person = await _apiService.GetPersonByIdentificationAsync(identification);
             if (person == null)
@@ -130,7 +127,7 @@ namespace PersonVehicle.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdatePerson(string identification, UpdatePersonDto person)
+        public async Task<IActionResult> UpdatePerson(int identification, Person person)
         {
             if (!ModelState.IsValid)
             {
@@ -173,7 +170,7 @@ namespace PersonVehicle.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateVehicle(string plate, UpdateVehicleDto vehicle)
+        public async Task<IActionResult> UpdateVehicle(string plate, Vehicle vehicle)
         {
             if (!ModelState.IsValid)
             {

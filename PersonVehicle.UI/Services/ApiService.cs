@@ -1,6 +1,10 @@
+using PersonVehicle.Model;
 using PersonVehicle.UI.Models;
-using System.Text.Json;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
+using Person = PersonVehicle.UI.Models.Person;
+using Vehicle = PersonVehicle.UI.Models.Vehicle;
 
 namespace PersonVehicle.UI.Services
 {
@@ -31,7 +35,7 @@ namespace PersonVehicle.UI.Services
             return new List<Person>();
         }
 
-        public async Task<Person?> GetPersonByIdentificationAsync(string identification)
+        public async Task<Person?> GetPersonByIdentificationAsync(int identification)
         {
             var response = await _httpClient.GetAsync($"api/persons/by-identification/{identification}");
             if (response.IsSuccessStatusCode)
@@ -42,7 +46,7 @@ namespace PersonVehicle.UI.Services
             return null;
         }
 
-        public async Task<bool> CreatePersonAsync(CreatePersonDto person)
+        public async Task<bool> CreatePersonAsync(Person person, int identification)
         {
             var json = JsonSerializer.Serialize(person, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -51,7 +55,7 @@ namespace PersonVehicle.UI.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdatePersonAsync(string identification, UpdatePersonDto person)
+        public async Task<bool> UpdatePersonAsync(int identification, Person person)
         {
             var json = JsonSerializer.Serialize(person, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -59,6 +63,16 @@ namespace PersonVehicle.UI.Services
             var response = await _httpClient.PutAsync($"api/persons/{identification}", content);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<bool> EliminarPersonAsync(int identification)
+        {
+            var json = JsonSerializer.Serialize(identification, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.DeleteAsync($"api/persons/{identification}");
+            return response.IsSuccessStatusCode;
+        }
+
 
         // Vehículos
         public async Task<List<Vehicle>> GetAllVehiclesAsync()
@@ -83,7 +97,7 @@ namespace PersonVehicle.UI.Services
             return new List<Vehicle>();
         }
 
-        public async Task<bool> CreateVehicleAsync(CreateVehicleDto vehicle)
+        public async Task<bool> CreateVehicleAsync(Vehicle vehicle)
         {
             var json = JsonSerializer.Serialize(vehicle, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -92,7 +106,7 @@ namespace PersonVehicle.UI.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdateVehicleAsync(string plate, UpdateVehicleDto vehicle)
+        public async Task<bool> UpdateVehicleAsync(string plate, Vehicle vehicle)
         {
             var json = JsonSerializer.Serialize(vehicle, _jsonOptions);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -100,5 +114,15 @@ namespace PersonVehicle.UI.Services
             var response = await _httpClient.PutAsync($"api/vehicles/{plate}", content);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<bool> EliminarVehicleAsync(string plate)
+        {
+            var json = JsonSerializer.Serialize(plate, _jsonOptions);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.DeleteAsync($"api/persons/{plate}");
+            return response.IsSuccessStatusCode;
+        }
+
     }
 }

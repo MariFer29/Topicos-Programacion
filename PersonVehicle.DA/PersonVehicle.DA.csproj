@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PersonVehicle.BL\PersonVehicle.BL.csproj" />
     <ProjectReference Include="..\PersonVehicle.Model\PersonVehicle.Model.csproj" />
   </ItemGroup>
 
