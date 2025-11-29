@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PersonVehicle.UI.Models
 {
-    public class Person
+    public class Persons
     {
         public int idPerson { get; set; }
 
@@ -30,7 +30,7 @@ namespace PersonVehicle.UI.Models
         [Display(Name = "Salario")]
         public decimal Salario { get; set; }
 
-        public List<Vehicle> Vehicles { get; set; } = new();
+        public List<Vehicles> Vehicles { get; set; } = new();
         public List<Owner> Owners { get; set; } = new();
         public string FullName => $"{FirstName} {LastName}".Trim();
     }

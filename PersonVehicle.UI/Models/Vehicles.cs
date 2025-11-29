@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PersonVehicle.UI.Models
 {
-    public class Vehicle
+    public class Vehicles
     {
         public int idVehicle { get; set; }
 
@@ -29,7 +29,7 @@ namespace PersonVehicle.UI.Models
         public int? PersonIdentification { get; set; }
 
         public int idOwner { get; set; }
-        public Person? Owner { get; set; }
+        public Persons? Owner { get; set; }
 
         public string OwnerName => Owner != null ? Owner.FullName : "";
 

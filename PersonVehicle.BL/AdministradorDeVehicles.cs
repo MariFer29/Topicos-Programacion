@@ -124,40 +124,6 @@ namespace PersonVehicle.BL
 
             return $"✔ El vehículo con la placa {placa} fue actualizado ahora como {vehicle.Plate}.";
         }
-
-        
-        
-        
-        //public async Task<String> ActualizarOwnerVehicleAsync(string placa, Owner owner)
-        //{
-        //    // Obtener el vehículo original por placa
-        //    var vehiculoAModificar = await _vehicleRepository.ObtenerVehiclePorPlateAsync(placa);
-        //    if (vehiculoAModificar == null)
-        //    {
-        //        return $"❗ El vehículo con la placa {placa} no fue encontrado.";
-        //    }
-
-        //    var propietarioActual = await _ownerRepository.ObtenerPropietarioPorVehicleIdAsync(placa);
-        //    if (propietarioActual == null)
-        //        return $"❗ El vehículo con la placa {placa} no fue encontrado.";
-
-        //    // Buscar al nuevo dueño
-        //    var newOwnerPerson = await _personRepository.ObtenerIdentificacionAsync(owner.OwnerIdentification);
-        //    if (newOwnerPerson == null)
-        //        return $"❗ La persona con identificación {owner.OwnerIdentification} no fue encontrada.";
-        //    //Valida si la cedula tiene 9 digitos
-        //    if (owner.OwnerIdentification.ToString().Length != 9)
-        //    {
-        //        return "❗ La cédula de la persona no puede ser 0 ni tener más de 9 digitos.";
-
-        //    }
-        //    // Actualizar propietario
-        //    newOwnerPerson.Person_idPerson = newOwnerPerson.idPerson;
-        //    await _ownerRepository.ActualizarPropietarioAsync(newOwnerPerson);
-        //    return $"✔ El vehículo con placa {placa} ahora es propiedad de {newOwnerPerson.FirstName} {newOwnerPerson.LastName}.";
-        //}
-
-
         public async Task<String> ActualizarOwnerVehicleAsync(string placa, Owner owner)
         {
             // 1. Verificar que el vehículo existe
@@ -185,11 +151,6 @@ namespace PersonVehicle.BL
 
             return $"✔ El vehículo con placa {placa} ahora es propiedad de {nuevaPersona.FirstName} {nuevaPersona.LastName}.";
         }
-
-
-
-
-
         public async Task<String> EliminarVehicleAsync(string plate) //BL
         {
             var PersonAEliminar = await _vehicleRepository.ObtenerVehiclePorPlateAsync(plate);
