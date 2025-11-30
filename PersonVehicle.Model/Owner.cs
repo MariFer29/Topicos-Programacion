@@ -1,24 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace PersonVehicle.Model
 {
+    // Indica que esta clase se mapeará a la tabla "Owner".
     [Table("Owner")]
     public class Owner
     {
-        [Key][JsonIgnore] public int idOwner { get; set; }
+        // Llave primaria del registro de propietarios.
+        // Se ignora en JSON para no exponerlo en respuestas.
+        [Key]
+        [JsonIgnore]
+        public int idOwner { get; set; }
 
-        [JsonIgnore] public int Person_idPerson { get; set; }
-        [NotMapped] public int OwnerIdentification { get; set; }
-        [NotMapped][JsonIgnore] public Persons? Person { get; set; }
-        //[NotMapped] public string PlateVehicle { get; set; }
-        [JsonIgnore] public int Vehicle_idVehicle { get; set; }
-        [NotMapped][JsonIgnore] public Vehicles? Vehicle { get; set; }
+        // ID de la persona a la que pertenece el vehículo.
+        // Se guarda en la BD, pero no se muestra en JSON.
+        [JsonIgnore]
+        public int Person_idPerson { get; set; }
+
+        // Identificación de la persona (cédula).
+        // No se guarda en BD: solo se utiliza para solicitudes.
+        [NotMapped]
+        public int OwnerIdentification { get; set; }
+
+        // Relación con la entidad Persons.
+        // No se guarda directamente en esta tabla.
+        // Se ignora en JSON para evitar ciclos o datos innecesarios.
+        [NotMapped]
+        [JsonIgnore]
+        public Persons? Person { get; set; }
+
+        // ID del vehículo asociado a este propietario.
+        // No se expone en JSON.
+        [JsonIgnore]
+        public int Vehicle_idVehicle { get; set; }
+
+        // Relación con la entidad Vehicles.
+        // No se mapea en BD porque la relación viene desde Vehicles → Owner.
+        // Se ignora en JSON para evitar recursión.
+        [NotMapped]
+        [JsonIgnore]
+        public Vehicles? Vehicle { get; set; }
     }
 }
+

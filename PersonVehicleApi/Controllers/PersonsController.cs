@@ -1,34 +1,31 @@
+using Microsoft.AspNetCore.Mvc;
 using PersonVehicle.BL;
 using PersonVehicle.Model;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Rewrite;
-using static System.Collections.Specialized.BitVector32;
+using PersonVehicle.Model.DTO;
 
 namespace PersonVehicleApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/persons")]
     public class PersonsController : ControllerBase
     {
         private readonly IAdministradorDePersons _adpersonRepository;
 
-        // Inyección del servicio BL
         public PersonsController(IAdministradorDePersons adpersonRepository)
         {
             _adpersonRepository = adpersonRepository;
         }
 
-        // GET: api/persons — Obtiene todas las personas
-        [HttpGet("/api/ServicioDePersonasVehiculos/Personas/ObtengaListaDePersonas")]
+        // GET: api/persons
+        [HttpGet]
         public async Task<IActionResult> GetPersons()
         {
             var persons = await _adpersonRepository.ObtengaListaPersonsAsync();
             return Ok(persons);
         }
 
-        // GET: api/persons/by-identification/{identification}
-        // Consulta una persona por su identificación
-        [HttpGet("/api/ServicioDePersonasVehiculos/Personas/ObtengaListaDePersonas/PorIdentificacion/{identification}")]
+        // GET: api/persons/{identification}
+        [HttpGet("{identification}")]
         public async Task<IActionResult> GetByIdentification(int identification)
         {
             try
@@ -38,12 +35,12 @@ namespace PersonVehicleApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); //message detalle error
+                return BadRequest(ex.Message);
             }
         }
 
-        // POST: api/persons — Crear una nueva persona
-        [HttpPost("/api/ServicioDePersonasVehiculos/Personas/AgregueNuevaPersona")]
+        // POST: api/persons
+        [HttpPost]
         public async Task<IActionResult> CreatePerson([FromBody] Persons person)
         {
             try
@@ -53,29 +50,34 @@ namespace PersonVehicleApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); //message detalle error
+                return BadRequest(ex.Message);
             }
         }
 
         // PUT: api/persons/{identification}
-        // Actualiza la persona según su identificación
-        [HttpPut("/api/ServicioDePersonasVehiculos/Personas/ModifiqueLaPersona/{identification}")]
-        public async Task<IActionResult> UpdatePerson(int identification, [FromBody] Persons person)
+        [HttpPut("{identification}")]
+        public async Task<IActionResult> UpdatePerson(int identification, [FromBody] UpdatePersonDto personDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             try
             {
-                var result = await _adpersonRepository.ActualizarPersonAsync(identification, person);
+                var result = await _adpersonRepository.ActualizarPersonAsync(identification, personDto);
+
+                if (result == null)
+                    return NotFound($"No existe persona con identificación {identification}");
+
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); //message detalle error
+                return BadRequest(ex.Message);
             }
         }
 
         // DELETE: api/persons/{identification}
-        // Elimina una persona y sus vehículos asociados
-        [HttpDelete("/api/ServicioDePersonasVehiculos/Personas/ElimineLaPersona/{identification}")]
+        [HttpDelete("{identification}")]
         public async Task<IActionResult> DeletePerson(int identification)
         {
             try
@@ -85,8 +87,9 @@ namespace PersonVehicleApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); //message detalle error
+                return BadRequest(ex.Message);
             }
         }
     }
 }
+

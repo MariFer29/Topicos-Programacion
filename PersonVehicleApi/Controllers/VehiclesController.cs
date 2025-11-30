@@ -1,47 +1,46 @@
-﻿using PersonVehicle.BL;
+﻿using Microsoft.AspNetCore.Mvc;
+using PersonVehicle.BL;
 using PersonVehicle.Model;
-using Microsoft.AspNetCore.Mvc;
+using PersonVehicle.Model.DTO;
 
 namespace PersonVehicleApi.Controllers
 {
     [ApiController]
-    [Route("api/ServicioDePersonasVehiculos/Vehiculos/")]
+    [Route("api/vehiculos")]
     public class VehiclesController : ControllerBase
     {
-        private readonly IAdministradorDeVehicles _advehicleRepository; // Servicio de lógica de negocio
+        private readonly IAdministradorDeVehicles _advehicleRepository;
 
-        // Inyección del servicio BL
         public VehiclesController(IAdministradorDeVehicles advehicleRepository)
         {
             _advehicleRepository = advehicleRepository;
         }
 
-        // GET:  — Obtiene todos los vehículos
-        [HttpGet("ObtengaListaDeVehiculos")]
+        // GET: api/vehiculos
+        [HttpGet]
         public async Task<IActionResult> GetVehicles()
         {
             var vehicles = await _advehicleRepository.ObtengaListaVehiclesAsync();
             return Ok(vehicles);
         }
 
-        // GET: 
-        // Obtiene la persona propietaria mediante la placa del vehículo
-        [HttpGet("ObtengaListaDeVehiculoPorPlaca/{plate}")]
-        public async Task<IActionResult> GetOwnerByPlate(string plate)
+        // GET: api/vehiculos/{placa}
+        [HttpGet("{placa}")]
+        public async Task<IActionResult> GetByPlate(string placa)
         {
             try
             {
-                var result = await _advehicleRepository.ObtengaListaVehiclePlateAsync(plate);
+                var result = await _advehicleRepository.ObtengaListaVehiclePlateAsync(placa);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); //message detalle error
+                return BadRequest(ex.Message);
             }
         }
 
-        // POST: 
-        [HttpPost("AgregueNuevoVehiculo")]
+        // POST: api/vehiculos
+        [HttpPost]
         public async Task<IActionResult> CreateVehicle([FromBody] Vehicles vehicle)
         {
             try
@@ -51,28 +50,27 @@ namespace PersonVehicleApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); //message detalle error
+                return BadRequest(ex.Message);
             }
         }
 
-        // PUT: 
-        // Actualiza datos del vehículo mediante su placa
-        [HttpPut("ModifiqueElVehiculo/owner/placa/{placa}")]
-        public async Task<IActionResult> UpdateVehicle(string placa, [FromBody] Vehicles vehicle)
+        // PUT: api/vehiculos/{placa}
+        [HttpPut("{placa}")]
+        public async Task<IActionResult> UpdateVehicle(string placa, [FromBody] VehicleUpdateDto vehicleDto)
         {
             try
             {
-                var result = await _advehicleRepository.ActualizarVehicleAsync(placa, vehicle);
+                var result = await _advehicleRepository.ActualizarVehicleAsync(placa, vehicleDto);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); //message detalle error
+                return BadRequest(ex.Message);
             }
         }
-        
-        // Cambia el dueño del vehículo
-        [HttpPut("ModifiquePropietario/owner/placa/{placa}")]
+
+        // PUT: api/vehiculos/{placa}/propietario
+        [HttpPut("{placa}/propietario")]
         public async Task<IActionResult> UpdateOwner(string placa, [FromBody] Owner owner)
         {
             try
@@ -82,24 +80,24 @@ namespace PersonVehicleApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); //message detalle error
+                return BadRequest(ex.Message);
             }
         }
 
-        // DELETE: 
-        // Elimina un vehículo por su placa
-        [HttpDelete("ElimineElVehiculo/plate/{plate}")]
-        public async Task<IActionResult> DeleteVehicle(string plate)
+        // DELETE: api/vehiculos/{placa}
+        [HttpDelete("{placa}")]
+        public async Task<IActionResult> DeleteVehicle(string placa)
         {
             try
             {
-                var result = await _advehicleRepository.EliminarVehicleAsync(plate);
+                var result = await _advehicleRepository.EliminarVehicleAsync(placa);
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message); //message detalle error
+                return BadRequest(ex.Message);
             }
         }
     }
 }
+

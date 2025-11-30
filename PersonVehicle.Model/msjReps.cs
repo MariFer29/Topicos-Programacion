@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PersonVehicle.Model
 {
     public class msjResp
     {
-        [Key] public int id { get; set; }
+        // Llave primaria para la tabla msjResp.
+        [Key]
+        public int id { get; set; }
+
+        // Mensaje que describe el resultado de alguna operación en la lógica del sistema.
         public string Mensaje { get; set; }
     }
 }
+
