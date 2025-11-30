@@ -47,13 +47,54 @@ namespace PersonVehicle.DA
         }
         public async Task EliminarPersonAsync(int identification)
         {
-            var persona = await ObtenerIdentificacionAsync(identification);
+            //var persona = await ObtenerIdentificacionAsync(identification);
+
+            //var ppp = await _context.Persons
+            //    .Include(p => p.Owners)
+            //        .ThenInclude(o => o.Vehicle)
+            //    .FirstOrDefaultAsync(p => p.Identification == identification);
+            var persona = await _context.Persons
+                .Include(p => p.Owners)
+                    .ThenInclude(o => o.Vehicle)
+                .FirstOrDefaultAsync(p => p.Identification == identification);
             if (persona != null)
             {
                 _context.Persons.Remove(persona);
                 await _context.SaveChangesAsync();
             }
         }
+
+
+        //public async Task<bool> EliminarPersonAsync(int identification)
+        //{
+        //    var persona = await _context.Persons
+        //        .Include(p => p.Owners)
+        //            .ThenInclude(o => o.Vehicle)
+        //        .FirstOrDefaultAsync(p => p.Identification == identification);
+
+        //    if (persona == null)
+        //        return false;
+
+        //    // 1. Eliminar vehículos
+        //    foreach (var owner in persona.Owners)
+        //    {
+        //        if (owner.Vehicle != null)
+        //            _context.Vehicles.Remove(owner.Vehicle);
+        //    }
+
+        //    // 2. Eliminar owners
+        //    _context.Owners.RemoveRange(persona.Owners);
+
+        //    // 3. Eliminar persona
+        //    _context.Persons.Remove(persona);
+
+        //    await _context.SaveChangesAsync();
+        //    return true;
+        //}
+
+
+
+
         public async Task<Persons?> ObtenerListaxIdentificationAsync(int identification)
         {
             return await _context.Persons
@@ -62,6 +103,5 @@ namespace PersonVehicle.DA
                 .AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Identification == identification);
         }
-
     }
 }

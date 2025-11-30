@@ -26,7 +26,7 @@ namespace PersonVehicleApi.Controllers
 
         // GET: 
         // Obtiene la persona propietaria mediante la placa del vehículo
-        [HttpGet("ObtengaListaDeVehiculoPorPlaca/placa={plate}")]
+        [HttpGet("ObtengaListaDeVehiculoPorPlaca/{plate}")]
         public async Task<IActionResult> GetOwnerByPlate(string plate)
         {
             try
@@ -57,7 +57,7 @@ namespace PersonVehicleApi.Controllers
 
         // PUT: 
         // Actualiza datos del vehículo mediante su placa
-        [HttpPut("ModifiqueElVehiculo/owner/placa={placa}")]
+        [HttpPut("ModifiqueElVehiculo/owner/placa/{placa}")]
         public async Task<IActionResult> UpdateVehicle(string placa, [FromBody] Vehicles vehicle)
         {
             try
@@ -72,7 +72,7 @@ namespace PersonVehicleApi.Controllers
         }
         
         // Cambia el dueño del vehículo
-        [HttpPut("ModifiquePropietario/owner/placa={placa}")]
+        [HttpPut("ModifiquePropietario/owner/placa/{placa}")]
         public async Task<IActionResult> UpdateOwner(string placa, [FromBody] Owner owner)
         {
             try
@@ -88,7 +88,7 @@ namespace PersonVehicleApi.Controllers
 
         // DELETE: 
         // Elimina un vehículo por su placa
-        [HttpDelete("ElimineElVehiculo/plate={plate}")]
+        [HttpDelete("ElimineElVehiculo/plate/{plate}")]
         public async Task<IActionResult> DeleteVehicle(string plate)
         {
             try

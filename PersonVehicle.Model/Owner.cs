@@ -14,10 +14,10 @@ namespace PersonVehicle.Model
     {
         [Key][JsonIgnore] public int idOwner { get; set; }
 
-        [JsonIgnore]public int Person_idPerson { get; set; }
+        [JsonIgnore] public int Person_idPerson { get; set; }
         [NotMapped] public int OwnerIdentification { get; set; }
         [NotMapped][JsonIgnore] public Persons? Person { get; set; }
-        [NotMapped] public string PlateVehicle {  get; set; }
+        //[NotMapped] public string PlateVehicle { get; set; }
         [JsonIgnore] public int Vehicle_idVehicle { get; set; }
         [NotMapped][JsonIgnore] public Vehicles? Vehicle { get; set; }
     }

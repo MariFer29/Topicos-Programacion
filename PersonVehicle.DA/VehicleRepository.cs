@@ -32,9 +32,7 @@ namespace PersonVehicle.DA
                     Make = v.Make,
                     Model = v.Model,
                     Year = v.Year,
-                    PersonIdentification = v.Owner.Person.Identification,
-                    PersonFirstName = v.Owner.Person.FirstName,
-                    PersonLastName = v.Owner.Person.LastName
+                    PersonIdentification = v.Owner.Person.Identification
                 })
                 .ToListAsync();
         }
@@ -70,9 +68,7 @@ namespace PersonVehicle.DA
                     Make = v.Make,
                     Model = v.Model,
                     Year = v.Year,
-                    PersonIdentification = v.Owner.Person.Identification,
-                    PersonFirstName = v.Owner.Person.FirstName,
-                    PersonLastName = v.Owner.Person.LastName
+                    PersonIdentification = v.Owner.Person.Identification
                 })
                 .FirstOrDefaultAsync();
         }

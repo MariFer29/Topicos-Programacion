@@ -37,7 +37,7 @@
 
 //app.Run();
 
-using GestionDePersonas.UI;
+using PersonVehicle.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 

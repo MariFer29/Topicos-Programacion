@@ -8,7 +8,7 @@ namespace PersonVehicle.UI.Models
 
         [Required(ErrorMessage = "Debe seleccionar una persona")]
         [Display(Name = "Persona")]
-        public int Person_idPerson { get; set; }
+        public int Persons_idPerson { get; set; }
 
         [Required(ErrorMessage = "Debe seleccionar un vehículo")]
         [Display(Name = "Vehículo")]

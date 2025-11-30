@@ -26,8 +26,7 @@ namespace PersonVehicle.DA
             modelBuilder.Entity<Owner>()
                 .HasOne(o => o.Vehicle)
                 .WithOne(v => v.Owner)
-                .HasForeignKey<Owner>(o => o.Vehicle_idVehicle)
-                .OnDelete(DeleteBehavior.Cascade); ;
+                .HasForeignKey<Owner>(o => o.Vehicle_idVehicle);
         }
 
 

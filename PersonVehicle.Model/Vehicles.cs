@@ -19,10 +19,9 @@ namespace PersonVehicle.Model
         [Required] public string Model { get; set; } // Modelo del vehículo
         [Required] public int Year { get; set; } // Año del vehículo
         [NotMapped] public int PersonIdentification { get; set; }
-        [NotMapped] public string PersonFirstName { get; set; }
-        [NotMapped] public string PersonLastName { get; set; }
-        [NotMapped][JsonIgnore]public Owner? Owner { get; set; }
-
+        //[NotMapped] public string PersonFirstName { get; set; }
+        //[NotMapped] public string PersonLastName { get; set; }
+        [NotMapped][JsonIgnore] public Owner? Owner { get; set; }
     }
 
 

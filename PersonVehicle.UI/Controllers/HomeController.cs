@@ -35,7 +35,7 @@ namespace PersonVehicle.UI.Controllers
                 return RedirectToAction("Index");
             }
 
-            var success = await _apiService.AgregarPersonaAsync(person) 
+            var success = await _apiService.AgregarPersonaAsync(person);
                 //.AgregarPersonaAsync(person);
 
             if (success)

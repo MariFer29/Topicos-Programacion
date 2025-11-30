@@ -95,25 +95,17 @@ namespace PersonVehicle.BL
                 return $"❗El vehículo con la placa {placa} no fue encontrado.";
             }
 
-            // Si la placa nueva es diferente a la original
-            if (vehiculoAModificar.Plate != vehicle.Plate)
-            {
-                // Verificar que no exista otro vehículo con esa nueva placa
-                var placaExistente = await _vehicleRepository.ObtenerVehiclePorPlateAsync(vehicle.Plate);
+            //// Si la placa nueva es diferente a la original
+            //if (vehiculoAModificar.Plate != vehicle.Plate)
+            //{
+            //    // Verificar que no exista otro vehículo con esa nueva placa
+            //    var placaExistente = await _vehicleRepository.ObtenerVehiclePorPlateAsync(vehicle.Plate);
 
-                if (placaExistente != null)
-                {
-                    return $"❗ Ya existe un vehículo con la nueva placa {vehicle.Plate}.";
-                }
-            }
-
-            // Verificar que exista la persona
-            var owner = await _personRepository.ObtenerIdentificacionAsync(vehicle.PersonIdentification);
-            if (owner == null)
-            {
-                return $"❗ La identificacion {vehicle.PersonIdentification} no fue encontrada.";
-            }
-
+            //    if (placaExistente != null)
+            //    {
+            //        return $"❗ Ya existe un vehículo con la nueva placa {vehicle.Plate}.";
+            //    }
+            //}
             // Actualizar
             vehiculoAModificar.Plate = vehicle.Plate;
             vehiculoAModificar.Make = vehicle.Make;
@@ -126,26 +118,26 @@ namespace PersonVehicle.BL
         }
         public async Task<String> ActualizarOwnerVehicleAsync(string placa, Owner owner)
         {
-            // 1. Verificar que el vehículo existe
+            // Verificar que el vehículo existe
             var vehiculoAModificar = await _vehicleRepository.ObtenerVehiclePorPlateAsync(placa);
             if (vehiculoAModificar == null)
                 return $"❗ El vehículo con la placa {placa} no fue encontrado.";
 
-            // 2. Obtener el registro Owner actual
+            // Obtener el registro Owner actual
             var propietarioActual = await _ownerRepository.ObtenerOwnerPorPlateAsync(placa);
             if (propietarioActual == null)
                 return $"❗ El vehículo con la placa {placa} no tiene propietario registrado.";
 
-            // 3. Validar nueva identificación
+            // Validar nueva identificación
             if (owner.OwnerIdentification.ToString().Length != 9)
                 return "❗ La cédula de la persona no puede ser 0 ni tener más de 9 digitos.";
 
-            // 4. Buscar a la nueva persona mediante identificación
+            // Buscar a la nueva persona mediante identificación
             var nuevaPersona = await _personRepository.ObtenerIdentificacionAsync(owner.OwnerIdentification);
             if (nuevaPersona == null)
                 return $"❗ La persona con identificación {owner.OwnerIdentification} no fue encontrada.";
 
-            // 5. ACTUALIZAR EL OWNER (no la persona!)
+            // ACTUALIZAR EL OWNER (no la persona!)
             propietarioActual.Person_idPerson = nuevaPersona.idPerson;
             await _ownerRepository.ActualizarPropietarioAsync(propietarioActual);
 
