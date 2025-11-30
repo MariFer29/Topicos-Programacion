@@ -21,13 +21,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
 */
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); //Conexion
-
-builder.Services.AddDbContext<PersonVehicle.DA.AppDbContext>(options =>
-    options.UseSqlServer(connectionString)); // en Base de Datos
+//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); //Conexion
 
 //builder.Services.AddDbContext<PersonVehicle.DA.AppDbContext>(options =>
-//    options.UseInMemoryDatabase("ProyTAP")); //En Memoria
+//    options.UseSqlServer(connectionString)); // en Base de Datos
+
+builder.Services.AddDbContext<PersonVehicle.DA.AppDbContext>(options =>
+    options.UseInMemoryDatabase("ProyTAP")); //En Memoria
 
 
 builder.Services.AddScoped<PersonVehicle.BL.IOwnerRepository, PersonVehicle.DA.OwnerRepository>();
@@ -39,12 +39,13 @@ builder.Services.AddScoped<PersonVehicle.BL.IAdministradorDeVehicles, PersonVehi
 
 var app = builder.Build();
 
-// Habilita Swagger solo en modo Development
-if (app.Environment.IsDevelopment())
+// Habilita Swagger siempre (local y Azure)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API PersonasVehículos v1");
+    c.RoutePrefix = "swagger"; // Accesible desde /swagger/index.html
+});
 
 // Redirige solicitudes HTTP a HTTPS
 app.UseHttpsRedirection();
