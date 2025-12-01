@@ -10,24 +10,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Obtiene la cadena de conexión desde appsettings.json
-/*
-// Si no existe, usa una cadena de conexión por defecto
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                       //?? "Server=(localdb)\\mssqllocaldb;Database=PersonVehicleDb;Trusted_Connection=True;";
-
-// Registro del DbContext para que la aplicación pueda usar EF Core
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
-*/
-
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); //Conexion
-
-//builder.Services.AddDbContext<PersonVehicle.DA.AppDbContext>(options =>
-//    options.UseSqlServer(connectionString)); // en Base de Datos
+// CAMBIAR PARA BASE DE DATOS
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); //Conexion
 
 builder.Services.AddDbContext<PersonVehicle.DA.AppDbContext>(options =>
-    options.UseInMemoryDatabase("ProyTAP")); //En Memoria
+    options.UseSqlServer(connectionString));
+
+//CAMBIAR PARA MEMORIA 
+//builder.Services.AddDbContext<PersonVehicle.DA.AppDbContext>(options =>
+//    options.UseInMemoryDatabase("ProyTAP"));
 
 
 builder.Services.AddScoped<PersonVehicle.BL.IOwnerRepository, PersonVehicle.DA.OwnerRepository>();
