@@ -64,12 +64,10 @@ namespace PersonVehicle.BL
             }
 
             // Validación: teléfono correcto
-            if (person.Phone <= 0 || person.Phone < 9)
+            if (person.Phone.ToString().Length != 8)
             {
-                var Mensaje = new msjResp { id = -5, Mensaje = "❗El numero de telefono de la persona no puede ser 0 ni tener más de 8 digitos." };
-                var Mensajes = new List<msjResp>();
-                Mensajes.Add(Mensaje);
-                return Mensajes;
+                var Mensaje = new msjResp { id = -5, Mensaje = "❗El número de teléfono debe tener exactamente 8 dígitos." };
+                return new List<msjResp> { Mensaje };
             }
 
             // Validación: salario mayor a cero
