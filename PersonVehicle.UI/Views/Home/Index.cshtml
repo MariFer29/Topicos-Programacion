@@ -11,7 +11,7 @@
             @if (TempData["Success"] != null)
             {
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>Éxito:</strong> @TempData["Success"]
+                    <strong>¡Éxito:</strong> @TempData["Success"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
@@ -34,6 +34,7 @@
                     <p><strong>Nombre:</strong> @person.FullName</p>
                     <p><strong>Email:</strong> @person.Email</p>
                     <p><strong>Teléfono:</strong> @person.Phone</p>
+                    <p><strong>Salario:</strong> @person.Salario.ToString("C")</p>
                     @if (person.Vehicles != null && person.Vehicles.Any())
                     {
                         <p><strong>Vehículos:</strong></p>
@@ -77,7 +78,7 @@
                     <div class="mb-3">
                         <h6>Consultar Persona por Identificación</h6>
                         <form asp-action="SearchPersonByIdentification" method="post" class="d-flex">
-                            <input type="text" name="identification" class="form-control me-2" placeholder="Ingrese identificación" required>
+                            <input type="number" name="identification" class="form-control me-2" placeholder="Ingrese identificación" required>
                             <button type="submit" class="btn btn-outline-primary">Buscar</button>
                         </form>
                     </div>
@@ -93,19 +94,22 @@
                         <div class="collapse mt-3" id="addPersonForm">
                             <form asp-action="CreatePerson" method="post">
                                 <div class="mb-2">
-                                    <input type="text" name="identification" class="form-control" placeholder="Identificación *" required>
+                                    <input type="number" name="identification" class="form-control" placeholder="Identificación *" required>
                                 </div>
                                 <div class="mb-2">
                                     <input type="text" name="firstName" class="form-control" placeholder="Nombre *" required>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="text" name="lastName" class="form-control" placeholder="Apellido">
+                                    <input type="text" name="lastName" class="form-control" placeholder="Apellido *" required>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="email" name="email" class="form-control" placeholder="Email">
+                                    <input type="email" name="email" class="form-control" placeholder="Email *" required>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="text" name="phone" class="form-control" placeholder="Teléfono">
+                                    <input type="number" name="phone" class="form-control" placeholder="Teléfono *" required>
+                                </div>
+                                <div class="mb-2">
+                                    <input type="number" step="0.01" name="salario" class="form-control" placeholder="Salario *" required>
                                 </div>
                                 <button type="submit" class="btn btn-success">Crear Persona</button>
                             </form>
@@ -121,17 +125,6 @@
                     <h4>Gestión de Vehículos</h4>
                 </div>
                 <div class="card-body">
-                    <!-- Consultar vehículos por dueño -->
-                    <div class="mb-3">
-                        <h6>Consultar Vehículos por Identificación del Propietario</h6>
-                        <form asp-action="SearchVehiclesByOwner" method="post" class="d-flex">
-                            <input type="text" name="ownerIdentification" class="form-control me-2" placeholder="Identificación del propietario" required>
-                            <button type="submit" class="btn btn-outline-info">Buscar</button>
-                        </form>
-                    </div>
-
-                    <hr>
-
                     <!-- Ver todos los vehículos -->
                     <div class="mb-3">
                         <h6>Listar Todos los Vehículos</h6>
@@ -150,7 +143,7 @@
                     <h4>Lista de Todas las Personas</h4>
                 </div>
                 <div class="card-body">
-                    @if (ViewBag.Persons != null && ((List<PersonVehicle.UI.Models.Persosn>)ViewBag.Persons).Any())
+                    @if (ViewBag.Persons != null && ((List<PersonVehicle.UI.Models.Persons>)ViewBag.Persons).Any())
                     {
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -160,20 +153,32 @@
                                         <th>Nombre Completo</th>
                                         <th>Email</th>
                                         <th>Teléfono</th>
+                                        <th>Salario</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var person in (List<PersonVehicle.UI.Models.Persosn>)ViewBag.Persons)
+                                    @foreach (var person in (List<PersonVehicle.UI.Models.Persons>)ViewBag.Persons)
                                     {
                                         <tr>
                                             <td>@person.Identification</td>
                                             <td>@person.FullName</td>
                                             <td>@person.Email</td>
                                             <td>@person.Phone</td>
+                                            <td>@person.Salario.ToString("C")</td>
                                             <td>
-                                                <a asp-action="EditPerson" asp-route-identification="@person.Identification" 
-                                                   class="btn btn-sm btn-warning">Editar</a>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="EditPerson" asp-route-identification="@person.Identification" 
+                                                       class="btn btn-sm btn-warning" title="Editar persona">
+                                                        <i class="bi bi-pencil"></i> Editar
+                                                    </a>
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-danger" 
+                                                            onclick="confirmarEliminacion('@person.Identification', '@person.FullName')"
+                                                            title="Eliminar persona">
+                                                        <i class="bi bi-trash"></i> Eliminar
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     }
@@ -193,6 +198,11 @@
     </div>
 </div>
 
+<!-- Formulario oculto para eliminar -->
+<form id="deleteForm" asp-action="DeletePerson" method="post" style="display: none;">
+    <input type="hidden" id="deleteIdentification" name="identification" />
+</form>
+
 @section Scripts {
     <script>
         // Auto-hide alerts after 5 seconds
@@ -203,5 +213,13 @@
                 bsAlert.close();
             });
         }, 5000);
+
+        // Función para confirmar eliminación
+        function confirmarEliminacion(identification, nombre) {
+            if (confirm('¿Está seguro que desea eliminar a ' + nombre + ' (ID: ' + identification + ')?\n\nEsta acción no se puede deshacer.')) {
+                document.getElementById('deleteIdentification').value = identification;
+                document.getElementById('deleteForm').submit();
+            }
+        }
     </script>
 }

@@ -2,6 +2,8 @@
 using PersonVehicle.BL;
 using PersonVehicle.Model;
 using PersonVehicle.Model.DTO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace PersonVehicleApi.Controllers
 {
@@ -25,13 +27,38 @@ namespace PersonVehicleApi.Controllers
         }
 
         // GET: api/vehiculos/{placa}
+        // MODIFICADO - Usa serialización personalizada para incluir Owner y Person
         [HttpGet("{placa}")]
         public async Task<IActionResult> GetByPlate(string placa)
         {
             try
             {
                 var result = await _advehicleRepository.ObtengaListaVehiclePlateAsync(placa);
-                return Ok(result);
+                
+                // Crear un DTO para la respuesta que no tenga [JsonIgnore]
+                var response = new
+                {
+                    plate = result.Plate,
+                    make = result.Make,
+                    model = result.Model,
+                    year = result.Year,
+                    personIdentification = result.PersonIdentification,
+                    owner = result.Owner != null ? new
+                    {
+                        ownerIdentification = result.Owner.OwnerIdentification,
+                        person = result.Owner.Person != null ? new
+                        {
+                            identification = result.Owner.Person.Identification,
+                            firstName = result.Owner.Person.FirstName,
+                            lastName = result.Owner.Person.LastName,
+                            email = result.Owner.Person.Email,
+                            phone = result.Owner.Person.Phone,
+                            salario = result.Owner.Person.Salario
+                        } : null
+                    } : null
+                };
+                
+                return Ok(response);
             }
             catch (Exception ex)
             {
