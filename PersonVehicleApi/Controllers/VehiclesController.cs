@@ -1,91 +1,103 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using PersonVehicleApi.BL;
-using PersonVehicleApi.Model.Dtos;
+using PersonVehicle.BL;
+using PersonVehicle.Model;
+using PersonVehicle.Model.DTO;
 
 namespace PersonVehicleApi.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/vehiculos")]
     public class VehiclesController : ControllerBase
     {
-        private readonly VehiclesBL _bl; // Servicio de lógica de negocio
+        private readonly IAdministradorDeVehicles _advehicleRepository;
 
-        // Inyección del servicio BL
-        public VehiclesController(VehiclesBL bl)
+        public VehiclesController(IAdministradorDeVehicles advehicleRepository)
         {
-            _bl = bl;
+            _advehicleRepository = advehicleRepository;
         }
 
-        // GET: api/vehicles — Obtiene todos los vehículos
+        // GET: api/vehiculos
         [HttpGet]
         public async Task<IActionResult> GetVehicles()
         {
-            var vehicles = await _bl.GetAllVehiclesAsync();
+            var vehicles = await _advehicleRepository.ObtengaListaVehiclesAsync();
             return Ok(vehicles);
         }
 
-        // GET: api/vehicles/owner-by-plate/{plate}
-        // Obtiene la persona propietaria mediante la placa del vehículo
-        [HttpGet("owner-by-plate/{plate}")]
-        public async Task<IActionResult> GetOwnerByPlate(string plate)
+        // GET: api/vehiculos/{placa}
+        [HttpGet("{placa}")]
+        public async Task<IActionResult> GetByPlate(string placa)
         {
-            var result = await _bl.GetOwnerByPlateAsync(plate);
-
-            if (!result.Success)
-                return NotFound(result.Message);
-
-            return Ok(result.Owner);
+            try
+            {
+                var result = await _advehicleRepository.ObtengaListaVehiclePlateAsync(placa);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // POST: api/vehicles — Crear un nuevo vehículo
+        // POST: api/vehiculos
         [HttpPost]
-        public async Task<IActionResult> CreateVehicle([FromBody] CreateVehicleDto dto)
+        public async Task<IActionResult> CreateVehicle([FromBody] Vehicles vehicle)
         {
-            var result = await _bl.CreateVehicleAsync(dto);
-
-            if (!result.Success)
-                return BadRequest(result.Message);
-
-            return CreatedAtAction(nameof(GetVehicles), new { id = result.CreatedVehicle!.Id }, result.CreatedVehicle);
+            try
+            {
+                var result = await _advehicleRepository.AgregueVehicleAsync(vehicle);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // PUT: api/vehicles/{plate}
-        // Actualiza datos del vehículo mediante su placa
-        [HttpPut("{plate}")]
-        public async Task<IActionResult> UpdateVehicle(string plate, [FromBody] UpdateVehicleDto dto)
+        // PUT: api/vehiculos/{placa}
+        [HttpPut("{placa}")]
+        public async Task<IActionResult> UpdateVehicle(string placa, [FromBody] VehicleUpdateDto vehicleDto)
         {
-            var result = await _bl.UpdateVehicleAsync(plate, dto);
-
-            if (!result.Success)
-                return NotFound(result.Message);
-
-            return NoContent();
+            try
+            {
+                var result = await _advehicleRepository.ActualizarVehicleAsync(placa, vehicleDto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // PUT: api/vehicles/{plate}/change-owner
-        // Cambia el dueño del vehículo
-        [HttpPut("{plate}/change-owner")]
-        public async Task<IActionResult> UpdateOwner(string plate, [FromBody] UpdateVehicleOwnerDto dto)
+        // PUT: api/vehiculos/{placa}/propietario
+        [HttpPut("{placa}/propietario")]
+        public async Task<IActionResult> UpdateOwner(string placa, [FromBody] Owner owner)
         {
-            var result = await _bl.UpdateVehicleOwnerAsync(plate, dto.NewOwnerIdentification);
-
-            if (!result.Success)
-                return BadRequest(result.Message);
-
-            return Ok(result.Message);
+            try
+            {
+                var result = await _advehicleRepository.ActualizarOwnerVehicleAsync(placa, owner);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        // DELETE: api/vehicles/{plate}
-        // Elimina un vehículo por su placa
-        [HttpDelete("{plate}")]
-        public async Task<IActionResult> DeleteVehicle(string plate)
+        // DELETE: api/vehiculos/{placa}
+        [HttpDelete("{placa}")]
+        public async Task<IActionResult> DeleteVehicle(string placa)
         {
-            var result = await _bl.DeleteVehicleAsync(plate);
-
-            if (!result.Success)
-                return NotFound(result.Message);
-
-            return Ok(result.Message);
+            try
+            {
+                var result = await _advehicleRepository.EliminarVehicleAsync(placa);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
+

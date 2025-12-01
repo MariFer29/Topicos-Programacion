@@ -11,7 +11,7 @@
             @if (TempData["Success"] != null)
             {
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>? Éxito:</strong> @TempData["Success"]
+                    <strong>Éxito:</strong> @TempData["Success"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
@@ -19,7 +19,7 @@
             @if (TempData["Error"] != null)
             {
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>? Error:</strong> @TempData["Error"]
+                    <strong>Error:</strong> @TempData["Error"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
@@ -27,7 +27,7 @@
             <!-- Resultados de búsquedas -->
             @if (TempData["PersonResult"] != null)
             {
-                var person = System.Text.Json.JsonSerializer.Deserialize<PersonVehicle.UI.Models.Person>(TempData["PersonResult"].ToString());
+                var person = System.Text.Json.JsonSerializer.Deserialize<PersonVehicle.UI.Models.Persons>(TempData["PersonResult"].ToString());
                 <div class="alert alert-info">
                     <h5>Información de la Persona:</h5>
                     <p><strong>Identificación:</strong> @person.Identification</p>
@@ -49,7 +49,7 @@
 
             @if (TempData["VehiclesResult"] != null)
             {
-                var vehicles = System.Text.Json.JsonSerializer.Deserialize<List<PersonVehicle.UI.Models.Vehicle>>(TempData["VehiclesResult"].ToString());
+                var vehicles = System.Text.Json.JsonSerializer.Deserialize<List<PersonVehicle.UI.Models.Vehicles>>(TempData["VehiclesResult"].ToString());
                 <div class="alert alert-info">
                     <h5>Vehículos Encontrados:</h5>
                     @foreach (var vehicle in vehicles)
@@ -150,7 +150,7 @@
                     <h4>Lista de Todas las Personas</h4>
                 </div>
                 <div class="card-body">
-                    @if (ViewBag.Persons != null && ((List<PersonVehicle.UI.Models.Person>)ViewBag.Persons).Any())
+                    @if (ViewBag.Persons != null && ((List<PersonVehicle.UI.Models.Persosn>)ViewBag.Persons).Any())
                     {
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -164,7 +164,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var person in (List<PersonVehicle.UI.Models.Person>)ViewBag.Persons)
+                                    @foreach (var person in (List<PersonVehicle.UI.Models.Persosn>)ViewBag.Persons)
                                     {
                                         <tr>
                                             <td>@person.Identification</td>

@@ -1,4 +1,4 @@
-@model List<PersonVehicle.UI.Models.Vehicle>
+@model List<PersonVehicle.UI.Models.Vehicles>
 
 @{
     ViewData["Title"] = "Todos los Vehículos";
@@ -109,7 +109,7 @@
                                             <td>@vehicle.Make</td>
                                             <td>@vehicle.Model</td>
                                             <td>@vehicle.Year</td>
-                                            <td>@vehicle.OwnerName</td>
+                                            <td>@vehicle.PersonIdentification</td>
                                             <td>
                                                 <a asp-action="EditVehicle" asp-route-plate="@vehicle.Plate" 
                                                    class="btn btn-sm btn-warning">Editar</a>

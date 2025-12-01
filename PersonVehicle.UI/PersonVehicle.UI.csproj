@@ -6,4 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PersonVehicle.BL\PersonVehicle.BL.csproj" />
+    <ProjectReference Include="..\PersonVehicle.Model\PersonVehicle.Model.csproj" />
+  </ItemGroup>
+
 </Project>

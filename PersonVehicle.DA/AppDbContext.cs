@@ -1,40 +1,43 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PersonVehicleApi.Model;
+﻿using PersonVehicle.Model;
+using Microsoft.EntityFrameworkCore;
 
-namespace PersonVehicleApi.DA
+namespace PersonVehicle.DA
 {
     public class AppDbContext : DbContext
     {
-        // Constructor que recibe las opciones necesarias para conectar a la base de datos
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
+        // Constructor que recibe la configuración de la conexión a la base de datos mediante inyección de dependencias
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        {
+        }
 
-        // Representa la tabla de personas en la base de datos
-        public DbSet<Person> Persons { get; set; }
+        // DbSets que representan tablas en la base de datos
+        public DbSet<Persons> Persons { get; set; }    // Tabla de personas
+        public DbSet<Vehicles> Vehicles { get; set; }  // Tabla de vehículos
+        public DbSet<Owner> Owner { get; set; }        // Tabla de propietarios (relación persona-vehículo)
+        public DbSet<msjResp> msjResp { get; set; }    // Tabla para mensajes (poco usual pero válida si se requiere persistir mensajes)
 
-        // Representa la tabla de vehículos en la base de datos
-        public DbSet<Vehicle> Vehicles { get; set; }
-
-        // Se usa para configurar reglas, restricciones y relaciones entre entidades
+        // Configuración de relaciones y restricciones entre entidades
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Identificación de cada persona debe ser única
-            modelBuilder.Entity<Person>()
-                .HasIndex(p => p.Identification)
-                .IsUnique();
+            // Configuración de relación: 
+            // Un Owner tiene UNA Persona
+            // Una Persona puede tener MUCHOS Owners
+            // Owner.Person_idPerson es la clave foránea
+            // OnDelete.Cascade: si se elimina la persona, también se eliminan sus Owners
+            modelBuilder.Entity<Owner>()
+                .HasOne(o => o.Person)
+                .WithMany(p => p.Owners)
+                .HasForeignKey(o => o.Person_idPerson)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Placa del vehículo también debe ser única
-            modelBuilder.Entity<Vehicle>()
-                .HasIndex(v => v.Plate)
-                .IsUnique();
-
-            // Relación: una persona puede tener muchos vehículos
-            modelBuilder.Entity<Person>()
-                .HasMany(p => p.Vehicles)      // Una persona tiene muchos vehículos
-                .WithOne(v => v.Owner)         // Un vehículo tiene un dueño
-                .HasForeignKey(v => v.OwnerId) // Llave foránea en vehículo
-                .OnDelete(DeleteBehavior.Cascade); // Si se elimina una persona, se eliminan sus vehículos
-
-            base.OnModelCreating(modelBuilder);
+            // Configuración de relación:
+            // Un Owner tiene UN vehículo
+            // Un vehículo tiene UN solo Owner (relación 1 a 1)
+            // Owner.Vehicle_idVehicle es la clave foránea
+            modelBuilder.Entity<Owner>()
+                .HasOne(o => o.Vehicle)
+                .WithOne(v => v.Owner)
+                .HasForeignKey<Owner>(o => o.Vehicle_idVehicle);
         }
     }
 }
