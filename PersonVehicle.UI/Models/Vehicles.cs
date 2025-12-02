@@ -1,4 +1,3 @@
-using PersonVehicle.UI.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace PersonVehicle.UI.Models
@@ -24,15 +23,14 @@ namespace PersonVehicle.UI.Models
         [Range(1900, 2030, ErrorMessage = "El año debe estar entre 1900 y 2030")]
         public int Year { get; set; }
 
-        // Para ver quién es el propietario actual
+        // Para ver quién es el propietario actual (solo ID)
         [Display(Name = "Propietario actual")]
         public int? PersonIdentification { get; set; }
 
-        public int idOwner { get; set; }
-        public Persons? Owner { get; set; }
+        // Relación con Owner que contiene la información completa
+        public Owner? Owner { get; set; }
 
-        public string OwnerName => Owner != null ? Owner.FullName : "";
-
+        // Propiedad computada para mostrar el nombre del propietario
+        public string OwnerName => Owner?.Person != null ? Owner.Person.FullName : "";
     }
-
 }

@@ -45,8 +45,13 @@ namespace PersonVehicle.DA
             await _context.Persons.AddAsync(persona); // Inserta una nueva fila.
             await _context.SaveChangesAsync();        // Guarda los cambios.
 
-            // Devuelve los mensajes almacenados en msjResp (si existieran).
-            return await _context.msjResp.ToListAsync();
+            // Devuelve un mensaje de éxito en memoria (no consulta la base de datos)
+            var mensaje = new msjResp
+            {
+                id = 1,
+                Mensaje = $"Persona con la identificación {persona.Identification} fue registrada con éxito."
+            };
+            return new List<msjResp> { mensaje };
         }
 
         // Actualiza los datos de una persona existente.
