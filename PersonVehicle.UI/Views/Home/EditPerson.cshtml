@@ -12,37 +12,95 @@
                     <h4>Editar Persona - @Model.Identification</h4>
                 </div>
                 <div class="card-body">
-                    <form asp-action="UpdatePerson" asp-route-identification="@Model.Identification" method="post">
-                        <div class="mb-3">
+                    <form asp-action="UpdatePerson" method="post" id="editPersonForm">
+
+                        <!-- Identificación NO editable -->
+                        <div class="mb-2">
+                            <label for="identification" class="form-label">Identificación *</label>
+                            <input type="number"
+                                   id="identification"
+                                   name="identification"
+                                   class="form-control"
+                                   value="@Model.Identification"
+                                   readonly>
+                        </div>
+
+                        <!-- Identificación original (para el update) -->
+                        <input type="hidden" name="originalIdentification" value="@Model.Identification" />
+
+                        <div class="mb-2">
                             <label for="firstName" class="form-label">Nombre *</label>
-                            <input type="text" class="form-control" id="firstName" name="firstName" value="@Model.FirstName" required>
+                            <input type="text"
+                                   id="firstName"
+                                   name="firstName"
+                                   class="form-control"
+                                   value="@Model.FirstName"
+                                   required
+                                   maxlength="50"
+                                   pattern="[A-Za-zÀ-ÿ\s]+"
+                                   title="Solo letras y espacios">
+                            <small class="text-muted">Solo letras, máximo 50 caracteres</small>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="lastName" class="form-label">Apellido *</label>
-                            <input type="text" class="form-control" id="lastName" name="lastName" value="@Model.LastName" required>
+                            <input type="text"
+                                   id="lastName"
+                                   name="lastName"
+                                   class="form-control"
+                                   value="@Model.LastName"
+                                   required
+                                   maxlength="50"
+                                   pattern="[A-Za-zÀ-ÿ\s]+"
+                                   title="Solo letras y espacios">
+                            <small class="text-muted">Solo letras, máximo 50 caracteres</small>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="email" class="form-label">Email *</label>
-                            <input type="email" class="form-control" id="email" name="email" value="@Model.Email" required>
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   class="form-control"
+                                   value="@Model.Email"
+                                   required
+                                   maxlength="100">
+                            <small class="text-muted">Formato de email válido</small>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="phone" class="form-label">Teléfono *</label>
-                            <input type="number" class="form-control" id="phone" name="phone" value="@Model.Phone" required>
+                            <input type="number"
+                                   id="phone"
+                                   name="phone"
+                                   class="form-control"
+                                   value="@Model.Phone"
+                                   required
+                                   min="10000000"
+                                   max="99999999">
+                            <small class="text-muted">8 dígitos exactos</small>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-2">
                             <label for="salario" class="form-label">Salario *</label>
-                            <input type="number" step="0.01" class="form-control" id="salario" name="salario" value="@Model.Salario" required>
+                            <input type="number"
+                                   step="0.01"
+                                   id="salario"
+                                   name="salario"
+                                   class="form-control"
+                                   value="@Model.Salario"
+                                   required
+                                   min="0.01">
+                            <small class="text-muted">Debe ser mayor a 0</small>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <a asp-action="Index" class="btn btn-secondary me-md-2">Volver</a>
                             <button type="submit" class="btn btn-warning">Actualizar Persona</button>
                         </div>
+
                     </form>
+
                 </div>
             </div>
 

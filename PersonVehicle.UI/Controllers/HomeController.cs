@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+Ôªøusing Microsoft.AspNetCore.Mvc;
 using PersonVehicle.UI.Models;
 using PersonVehicle.UI.Services;
 using System.Diagnostics;
@@ -26,20 +26,20 @@ namespace PersonVehicle.UI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreatePerson(Persons person)
         {
-            // ValidaciÛn de identificaciÛn
+            // Validaci√≥n de identificaci√≥n
             if (person.Identification <= 0)
             {
-                TempData["Error"] = "La identificaciÛn debe ser mayor a 0.";
+                TempData["Error"] = "La identificaci√≥n debe ser mayor a 0.";
                 return RedirectToAction("Index");
             }
 
             if (person.Identification.ToString().Length > 9)
             {
-                TempData["Error"] = "La identificaciÛn no puede tener m·s de 9 dÌgitos.";
+                TempData["Error"] = "La identificaci√≥n no puede tener m√°s de 9 d√≠gitos.";
                 return RedirectToAction("Index");
             }
 
-            // ValidaciÛn de nombre
+            // Validaci√≥n de nombre
             if (string.IsNullOrWhiteSpace(person.FirstName))
             {
                 TempData["Error"] = "El nombre es requerido.";
@@ -48,18 +48,18 @@ namespace PersonVehicle.UI.Controllers
 
             if (person.FirstName.Length > 50)
             {
-                TempData["Error"] = "El nombre no puede tener m·s de 50 caracteres.";
+                TempData["Error"] = "El nombre no puede tener m√°s de 50 caracteres.";
                 return RedirectToAction("Index");
             }
 
             // Validar que el nombre solo contenga letras
-            if (!System.Text.RegularExpressions.Regex.IsMatch(person.FirstName, @"^[A-Za-z¿-ˇ\s]+$"))
+            if (!System.Text.RegularExpressions.Regex.IsMatch(person.FirstName, @"^[A-Za-z√Ä-√ø\s]+$"))
             {
                 TempData["Error"] = "El nombre solo puede contener letras y espacios.";
                 return RedirectToAction("Index");
             }
 
-            // ValidaciÛn de apellido
+            // Validaci√≥n de apellido
             if (string.IsNullOrWhiteSpace(person.LastName))
             {
                 TempData["Error"] = "El apellido es requerido.";
@@ -68,18 +68,18 @@ namespace PersonVehicle.UI.Controllers
 
             if (person.LastName.Length > 50)
             {
-                TempData["Error"] = "El apellido no puede tener m·s de 50 caracteres.";
+                TempData["Error"] = "El apellido no puede tener m√°s de 50 caracteres.";
                 return RedirectToAction("Index");
             }
 
             // Validar que el apellido solo contenga letras
-            if (!System.Text.RegularExpressions.Regex.IsMatch(person.LastName, @"^[A-Za-z¿-ˇ\s]+$"))
+            if (!System.Text.RegularExpressions.Regex.IsMatch(person.LastName, @"^[A-Za-z√Ä-√ø\s]+$"))
             {
                 TempData["Error"] = "El apellido solo puede contener letras y espacios.";
                 return RedirectToAction("Index");
             }
 
-            // ValidaciÛn de email
+            // Validaci√≥n de email
             if (string.IsNullOrWhiteSpace(person.Email))
             {
                 TempData["Error"] = "El email es requerido.";
@@ -88,7 +88,7 @@ namespace PersonVehicle.UI.Controllers
 
             if (person.Email.Length > 100)
             {
-                TempData["Error"] = "El email no puede tener m·s de 100 caracteres.";
+                TempData["Error"] = "El email no puede tener m√°s de 100 caracteres.";
                 return RedirectToAction("Index");
             }
 
@@ -96,25 +96,25 @@ namespace PersonVehicle.UI.Controllers
             var emailRegex = new System.Text.RegularExpressions.Regex(@"^[^\s@]+@[^\s@]+\.[^\s@]+$");
             if (!emailRegex.IsMatch(person.Email))
             {
-                TempData["Error"] = "Por favor ingrese un email v·lido.";
+                TempData["Error"] = "Por favor ingrese un email v√°lido.";
                 return RedirectToAction("Index");
             }
 
-            // ValidaciÛn de telÈfono (8 dÌgitos)
+            // Validaci√≥n de tel√©fono (8 d√≠gitos)
             if (person.Phone <= 0)
             {
-                TempData["Error"] = "El telÈfono es requerido.";
+                TempData["Error"] = "El tel√©fono es requerido.";
                 return RedirectToAction("Index");
             }
 
             var phoneString = person.Phone.ToString();
             if (phoneString.Length != 8)
             {
-                TempData["Error"] = "El telÈfono debe tener exactamente 8 dÌgitos.";
+                TempData["Error"] = "El tel√©fono debe tener exactamente 8 d√≠gitos.";
                 return RedirectToAction("Index");
             }
 
-            // ValidaciÛn de salario
+            // Validaci√≥n de salario
             if (person.Salario <= 0)
             {
                 TempData["Error"] = "El salario debe ser mayor a 0.";
@@ -130,11 +130,11 @@ namespace PersonVehicle.UI.Controllers
 
             if (success)
             {
-                TempData["Success"] = $"Persona {person.FullName} con identificaciÛn {person.Identification} creada exitosamente.";
+                TempData["Success"] = $"Persona {person.FullName} con identificaci√≥n {person.Identification} creada exitosamente.";
             }
             else
             {
-                TempData["Error"] = message ?? "No fue posible registrar la persona. Verifique que la identificaciÛn no exista ya en el sistema.";
+                TempData["Error"] = message ?? "No fue posible registrar la persona. Verifique que la identificaci√≥n no exista ya en el sistema.";
             }
 
             return RedirectToAction("Index");
@@ -145,7 +145,7 @@ namespace PersonVehicle.UI.Controllers
         {
             if (identification <= 0)
             {
-                TempData["Error"] = "Por favor ingrese una identificaciÛn v·lida.";
+                TempData["Error"] = "Por favor ingrese una identificaci√≥n v√°lida.";
                 return RedirectToAction("Index");
             }
 
@@ -153,7 +153,7 @@ namespace PersonVehicle.UI.Controllers
             
             if (person == null)
             {
-                TempData["Error"] = $"No se encontrÛ ninguna persona con identificaciÛn: {identification}";
+                TempData["Error"] = $"No se encontr√≥ ninguna persona con identificaci√≥n: {identification}";
             }
             else
             {
@@ -164,10 +164,11 @@ namespace PersonVehicle.UI.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpGet]
         public async Task<IActionResult> EditPerson(int identification)
         {
             var person = await _apiService.GetPersonByIdentificationAsync(identification);
-            
+
             if (person == null)
             {
                 TempData["Error"] = "Persona no encontrada.";
@@ -177,17 +178,21 @@ namespace PersonVehicle.UI.Controllers
             return View(person);
         }
 
+
         [HttpPost]
         public async Task<IActionResult> UpdatePerson(int identification, Persons person)
         {
+            // Validar modelo
             if (!ModelState.IsValid)
             {
+                // Recargar la persona original para mantener datos correctos
                 var existingPerson = await _apiService.GetPersonByIdentificationAsync(identification);
                 return View("EditPerson", existingPerson);
             }
 
+            // Ejecutar actualizaci√≥n
             var success = await _apiService.UpdatePersonAsync(identification, person);
-            
+
             if (success)
             {
                 TempData["Success"] = "Persona actualizada exitosamente.";
@@ -199,6 +204,7 @@ namespace PersonVehicle.UI.Controllers
 
             return RedirectToAction("Index");
         }
+
 
         [HttpPost]
         public async Task<IActionResult> DeletePerson(int identification)
@@ -230,7 +236,7 @@ namespace PersonVehicle.UI.Controllers
         {
             if (string.IsNullOrWhiteSpace(plate))
             {
-                TempData["Error"] = "Por favor ingrese una placa v·lida.";
+                TempData["Error"] = "Por favor ingrese una placa v√°lida.";
                 return RedirectToAction("AllVehicles");
             }
 
@@ -238,12 +244,12 @@ namespace PersonVehicle.UI.Controllers
             
             if (vehicle == null)
             {
-                TempData["Error"] = $"No se encontrÛ ning˙n vehÌculo con la placa: {plate}";
+                TempData["Error"] = $"No se encontr√≥ ning√∫n veh√≠culo con la placa: {plate}";
             }
             else
             {
                 TempData["VehicleResult"] = System.Text.Json.JsonSerializer.Serialize(vehicle);
-                TempData["Success"] = $"VehÌculo encontrado: {vehicle.Make} {vehicle.Model} ({vehicle.Year})";
+                TempData["Success"] = $"Veh√≠culo encontrado: {vehicle.Make} {vehicle.Model} ({vehicle.Year})";
             }
 
             return RedirectToAction("AllVehicles");
@@ -255,56 +261,56 @@ namespace PersonVehicle.UI.Controllers
             // Validaciones de entrada
             if (string.IsNullOrWhiteSpace(plate))
             {
-                TempData["Error"] = "La placa del vehÌculo es requerida.";
+                TempData["Error"] = "La placa del veh√≠culo es requerida.";
                 return RedirectToAction("AllVehicles");
             }
 
             // Normalizar placa
             plate = plate.Trim().ToUpper();
 
-            // Validar formato de placa: AAA-123 (3 letras, guion, 3 n˙meros)
+            // Validar formato de placa: AAA-123 (3 letras, guion, 3 n√∫meros)
             var plateRegex = new System.Text.RegularExpressions.Regex(@"^[A-Z]{3}-[0-9]{3}$");
             if (!plateRegex.IsMatch(plate))
             {
-                TempData["Error"] = "La placa debe seguir el formato ABC-123 (3 letras, guion, 3 n˙meros).";
+                TempData["Error"] = "La placa debe seguir el formato ABC-123 (3 letras, guion, 3 n√∫meros).";
                 return RedirectToAction("AllVehicles");
             }
 
             if (string.IsNullOrWhiteSpace(make))
             {
-                TempData["Error"] = "La marca del vehÌculo es requerida.";
+                TempData["Error"] = "La marca del veh√≠culo es requerida.";
                 return RedirectToAction("AllVehicles");
             }
 
             if (string.IsNullOrWhiteSpace(model))
             {
-                TempData["Error"] = "El modelo del vehÌculo es requerido.";
+                TempData["Error"] = "El modelo del veh√≠culo es requerido.";
                 return RedirectToAction("AllVehicles");
             }
 
             if (year < 1900 || year > 2030)
             {
-                TempData["Error"] = "El aÒo debe estar entre 1900 y 2030.";
+                TempData["Error"] = "El a√±o debe estar entre 1900 y 2030.";
                 return RedirectToAction("AllVehicles");
             }
 
             if (ownerIdentification <= 0)
             {
-                TempData["Error"] = "La identificaciÛn del propietario debe ser mayor a 0.";
+                TempData["Error"] = "La identificaci√≥n del propietario debe ser mayor a 0.";
                 return RedirectToAction("AllVehicles");
             }
 
             if (ownerIdentification.ToString().Length > 9)
             {
-                TempData["Error"] = "La identificaciÛn del propietario no puede tener m·s de 9 dÌgitos.";
+                TempData["Error"] = "La identificaci√≥n del propietario no puede tener m√°s de 9 d√≠gitos.";
                 return RedirectToAction("AllVehicles");
             }
 
-            // Verificar si la persona existe antes de crear el vehÌculo
+            // Verificar si la persona existe antes de crear el veh√≠culo
             var personExists = await _apiService.GetPersonByIdentificationAsync(ownerIdentification);
             if (personExists == null)
             {
-                TempData["Error"] = $"No se encontrÛ ninguna persona con la identificaciÛn {ownerIdentification}. Por favor verifique que la persona estÈ registrada en el sistema.";
+                TempData["Error"] = $"No se encontr√≥ ninguna persona con la identificaci√≥n {ownerIdentification}. Por favor verifique que la persona est√© registrada en el sistema.";
                 return RedirectToAction("AllVehicles");
             }
 
@@ -321,11 +327,11 @@ namespace PersonVehicle.UI.Controllers
             
             if (success)
             {
-                TempData["Success"] = $"VehÌculo {vehicle.Make} {vehicle.Model} con placa {vehicle.Plate} creado exitosamente y asignado a {personExists.FullName}.";
+                TempData["Success"] = $"Veh√≠culo {vehicle.Make} {vehicle.Model} con placa {vehicle.Plate} creado exitosamente y asignado a {personExists.FullName}.";
             }
             else
             {
-                TempData["Error"] = "Error al crear el vehÌculo. Verifique que la placa no exista ya en el sistema.";
+                TempData["Error"] = "Error al crear el veh√≠culo. Verifique que la placa no exista ya en el sistema.";
             }
 
             return RedirectToAction("AllVehicles");
@@ -337,7 +343,7 @@ namespace PersonVehicle.UI.Controllers
             
             if (vehicle == null)
             {
-                TempData["Error"] = "VehÌculo no encontrado.";
+                TempData["Error"] = "Veh√≠culo no encontrado.";
                 return RedirectToAction("AllVehicles");
             }
 
@@ -345,44 +351,57 @@ namespace PersonVehicle.UI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateVehicle(string plate, string make, string model, int year)
+        public async Task<IActionResult> UpdateVehicle(string originalPlate, string plate, string make, string model, int year)
         {
-            var vehicle = new Vehicles
+            // Obtener el veh√≠culo original por la placa que estamos editando
+            var existingVehicle = await _apiService.ObtengaListaDeVehiculoPorPlaca(originalPlate);
+            if (existingVehicle == null)
             {
-                Plate = plate,
-                Make = make,
-                Model = model,
-                Year = year
-            };
+                TempData["Error"] = "Veh√≠culo no encontrado.";
+                return RedirectToAction("EditVehicle", new { plate = originalPlate });
+            }
 
-            var success = await _apiService.UpdateVehicleAsync(plate, vehicle);
-            
+            // Verificar si la nueva placa ya existe en otro veh√≠culo
+            if (!string.Equals(originalPlate, plate, StringComparison.OrdinalIgnoreCase))
+            {
+                var duplicateVehicle = await _apiService.ObtengaListaDeVehiculoPorPlaca(plate);
+                if (duplicateVehicle != null)
+                {
+                    TempData["Error"] = "La placa ya est√° registrada para otro veh√≠culo.";
+                    return RedirectToAction("EditVehicle", new { plate = originalPlate });
+                }
+            }
+
+            // Actualizar los datos
+            existingVehicle.Plate = plate;
+            existingVehicle.Make = make;
+            existingVehicle.Model = model;
+            existingVehicle.Year = year;
+
+            var success = await _apiService.UpdateVehicleAsync(originalPlate, existingVehicle);
+
             if (success)
-            {
-                TempData["Success"] = "VehÌculo actualizado exitosamente.";
-            }
+                TempData["Success"] = "Veh√≠culo actualizado exitosamente.";
             else
-            {
-                TempData["Error"] = "Error al actualizar el vehÌculo.";
-            }
+                TempData["Error"] = "Error al actualizar el veh√≠culo.";
 
-            return RedirectToAction("EditVehicle", new { plate = plate });
+            return RedirectToAction("EditVehicle", new { plate = existingVehicle.Plate });
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateVehicleOwner(string plate, int newOwnerIdentification)
         {
-            // ValidaciÛn: identificaciÛn no puede ser 0 o negativa
+            // Validaci√≥n: identificaci√≥n no puede ser 0 o negativa
             if (newOwnerIdentification <= 0)
             {
-                TempData["Error"] = "Por favor ingrese una identificaciÛn v·lida mayor a 0.";
+                TempData["Error"] = "Por favor ingrese una identificaci√≥n v√°lida mayor a 0.";
                 return RedirectToAction("EditVehicle", new { plate = plate });
             }
 
-            // ValidaciÛn: identificaciÛn debe tener m·ximo 9 dÌgitos
+            // Validaci√≥n: identificaci√≥n debe tener m√°ximo 9 d√≠gitos
             if (newOwnerIdentification.ToString().Length > 9)
             {
-                TempData["Error"] = "La identificaciÛn no puede tener m·s de 9 dÌgitos.";
+                TempData["Error"] = "La identificaci√≥n no puede tener m√°s de 9 d√≠gitos.";
                 return RedirectToAction("EditVehicle", new { plate = plate });
             }
 
@@ -390,7 +409,7 @@ namespace PersonVehicle.UI.Controllers
             var personExists = await _apiService.GetPersonByIdentificationAsync(newOwnerIdentification);
             if (personExists == null)
             {
-                TempData["Error"] = $"No se encontrÛ ninguna persona con la identificaciÛn {newOwnerIdentification}. Por favor verifique que la persona estÈ registrada en el sistema.";
+                TempData["Error"] = $"No se encontr√≥ ninguna persona con la identificaci√≥n {newOwnerIdentification}. Por favor verifique que la persona est√© registrada en el sistema.";
                 return RedirectToAction("EditVehicle", new { plate = plate });
             }
 
@@ -416,11 +435,11 @@ namespace PersonVehicle.UI.Controllers
             
             if (success)
             {
-                TempData["Success"] = "VehÌculo eliminado exitosamente.";
+                TempData["Success"] = "Veh√≠culo eliminado exitosamente.";
             }
             else
             {
-                TempData["Error"] = "Error al eliminar el vehÌculo.";
+                TempData["Error"] = "Error al eliminar el veh√≠culo.";
             }
 
             return RedirectToAction("AllVehicles");

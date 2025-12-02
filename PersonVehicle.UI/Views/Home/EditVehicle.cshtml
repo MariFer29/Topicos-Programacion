@@ -30,26 +30,27 @@
 
                     <!-- Formulario para actualizar datos del vehículo -->
                     <h5 class="mb-3 text-primary"><i class="bi bi-pencil-square"></i> Datos del Vehículo</h5>
-                    <form asp-action="UpdateVehicle" asp-route-plate="@Model.Plate" method="post">
+                    <form asp-action="UpdateVehicle" method="post">
+                        <input type="hidden" name="OriginalPlate" value="@Model.Plate" />
+
                         <div class="mb-3">
-                            <label for="plate" class="form-label">Placa</label>
-                            <input type="text" class="form-control" id="plate" name="plate" value="@Model.Plate" readonly>
-                            <small class="text-muted">La placa no se puede modificar</small>
+                            <label for="plate" class="form-label">Placa *</label>
+                            <input type="text" class="form-control" id="plate" name="Plate" value="@Model.Plate" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="make" class="form-label">Marca *</label>
-                            <input type="text" class="form-control" id="make" name="make" value="@Model.Make" required>
+                            <input type="text" class="form-control" id="make" name="Make" value="@Model.Make" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="model" class="form-label">Modelo *</label>
-                            <input type="text" class="form-control" id="model" name="model" value="@Model.Model" required>
+                            <input type="text" class="form-control" id="model" name="Model" value="@Model.Model" required>
                         </div>
 
                         <div class="mb-3">
                             <label for="year" class="form-label">Año *</label>
-                            <input type="number" class="form-control" id="year" name="year" value="@Model.Year" min="1900" max="2030" required>
+                            <input type="number" class="form-control" id="year" name="Year" value="@Model.Year" min="1900" max="2030" required>
                         </div>
 
                         <div class="d-grid gap-2">
@@ -58,6 +59,7 @@
                             </button>
                         </div>
                     </form>
+
 
                     <hr class="my-4">
 
