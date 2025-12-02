@@ -249,7 +249,7 @@ namespace PersonVehicle.UI.Services
             return await UpdateVehicleAsync(placa, vehicle);
         }
 
-        public async Task<bool> EditarVehiculoPropietarioAsync(string placa, int ownerIdentification)
+        public async Task<(bool success, string message)> EditarVehiculoPropietarioAsync(string placa, int ownerIdentification)
         {
             try
             {
@@ -264,11 +264,24 @@ namespace PersonVehicle.UI.Services
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PutAsync($"api/vehiculos/{placa}/propietario", content);
                 
-                return response.IsSuccessStatusCode;
+                var responseContent = await response.Content.ReadAsStringAsync();
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    // Limpiar el mensaje de las comillas si viene como string JSON
+                    var message = responseContent.Trim('"');
+                    return (true, message);
+                }
+                else
+                {
+                    // Si hay error, intentar obtener el mensaje de error
+                    var errorMessage = responseContent.Trim('"');
+                    return (false, errorMessage);
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                return false;
+                return (false, $"Error de conexión: {ex.Message}");
             }
         }
 

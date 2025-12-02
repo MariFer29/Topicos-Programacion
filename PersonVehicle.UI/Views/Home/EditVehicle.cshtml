@@ -7,11 +7,29 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
+            <div class="card shadow">
                 <div class="card-header bg-warning text-dark">
-                    <h4>Editar Vehículo - @Model.Plate</h4>
+                    <h4><i class="bi bi-car-front"></i> Editar Vehículo - @Model.Plate</h4>
                 </div>
                 <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill"></i> <strong>¡Éxito!</strong> @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill"></i> <strong>Error:</strong> @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <!-- Formulario para actualizar datos del vehículo -->
+                    <h5 class="mb-3 text-primary"><i class="bi bi-pencil-square"></i> Datos del Vehículo</h5>
                     <form asp-action="UpdateVehicle" asp-route-plate="@Model.Plate" method="post">
                         <div class="mb-3">
                             <label for="plate" class="form-label">Placa</label>
@@ -34,13 +52,132 @@
                             <input type="number" class="form-control" id="year" name="year" value="@Model.Year" min="1900" max="2030" required>
                         </div>
 
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a asp-action="AllVehicles" class="btn btn-secondary me-md-2">Volver a Lista</a>
-                            <button type="submit" class="btn btn-warning">Actualizar Vehículo</button>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-check-circle"></i> Actualizar Datos del Vehículo
+                            </button>
                         </div>
                     </form>
+
+                    <hr class="my-4">
+
+                    <!-- Sección de propietario actual -->
+                    @if (Model.Owner != null && Model.Owner.Person != null)
+                    {
+                        <div class="card border-info mb-3">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="bi bi-person-fill"></i> Propietario Actual</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Identificación:</strong> <span class="badge bg-info">@Model.Owner.Person.Identification</span></p>
+                                <p><strong>Nombre:</strong> @Model.Owner.Person.FirstName @Model.Owner.Person.LastName</p>
+                                <p><strong>Email:</strong> @Model.Owner.Person.Email</p>
+                                <p><strong>Teléfono:</strong> @Model.Owner.Person.Phone</p>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.PersonIdentification.HasValue && Model.PersonIdentification.Value > 0)
+                    {
+                        <div class="alert alert-info">
+                            <strong>ID Propietario Actual:</strong> <span class="badge bg-info">@Model.PersonIdentification</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> Este vehículo no tiene propietario asignado.
+                        </div>
+                    }
+
+                    <!-- Formulario para cambiar propietario -->
+                    <h5 class="mb-3 text-success"><i class="bi bi-person-badge"></i> Cambiar Propietario</h5>
+                    <form asp-action="UpdateVehicleOwner" asp-route-plate="@Model.Plate" method="post" id="changeOwnerForm">
+                        <div class="mb-3">
+                            <label for="newOwnerIdentification" class="form-label">Nueva Identificación del Propietario *</label>
+                            <input type="number" class="form-control" id="newOwnerIdentification" name="newOwnerIdentification" 
+                                   placeholder="Ingrese la identificación de la nueva persona propietaria" 
+                                   min="1" 
+                                   max="999999999"
+                                   required
+                                   oninput="validateIdentification(this)">
+                            <small class="text-muted">Ingrese la identificación de una persona registrada en el sistema (máximo 9 dígitos)</small>
+                            <div class="invalid-feedback" id="identificationError">
+                                Por favor ingrese una identificación válida (1-9 dígitos).
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success" id="changeOwnerBtn">
+                                <i class="bi bi-arrow-left-right"></i> Cambiar Propietario
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="d-grid gap-2">
+                        <a asp-action="AllVehicles" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a Lista de Vehículos
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Auto-hide alerts after 5 seconds
+        setTimeout(function() {
+            var alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(function(alert) {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+
+        // Validación del campo de identificación
+        function validateIdentification(input) {
+            const value = input.value;
+            const changeOwnerBtn = document.getElementById('changeOwnerBtn');
+            const identificationError = document.getElementById('identificationError');
+            
+            // Remover caracteres no numéricos
+            input.value = value.replace(/[^0-9]/g, '');
+            
+            // Validar longitud máxima de 9 dígitos
+            if (input.value.length > 9) {
+                input.value = input.value.substring(0, 9);
+            }
+            
+            // Validar que sea mayor a 0
+            const numValue = parseInt(input.value);
+            if (input.value && (numValue <= 0 || input.value.length > 9)) {
+                input.classList.add('is-invalid');
+                changeOwnerBtn.disabled = true;
+                identificationError.style.display = 'block';
+            } else {
+                input.classList.remove('is-invalid');
+                changeOwnerBtn.disabled = false;
+                identificationError.style.display = 'none';
+            }
+        }
+
+        // Validación al enviar el formulario
+        document.getElementById('changeOwnerForm').addEventListener('submit', function(e) {
+            const identificationInput = document.getElementById('newOwnerIdentification');
+            const value = parseInt(identificationInput.value);
+            
+            if (!identificationInput.value || value <= 0 || identificationInput.value.length > 9) {
+                e.preventDefault();
+                identificationInput.classList.add('is-invalid');
+                document.getElementById('identificationError').style.display = 'block';
+                
+                // Mostrar alerta
+                alert('Por favor ingrese una identificación válida (1-9 dígitos).');
+                return false;
+            }
+        });
+    </script>
+}

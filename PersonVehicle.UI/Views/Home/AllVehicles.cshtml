@@ -122,8 +122,9 @@
                                             <i class="bi bi-pencil"></i> Editar
                                         </a>
                                         <button type="button" 
-                                                class="btn btn-danger" 
-                                                onclick="confirmarEliminacionVehiculo('@vehicle.Plate', '@vehicle.Make @vehicle.Model')">
+                                                class="btn btn-danger delete-vehicle-btn" 
+                                                data-plate="@vehicle.Plate"
+                                                data-description="@vehicle.Make @vehicle.Model">
                                             <i class="bi bi-trash"></i> Eliminar
                                         </button>
                                     </div>
@@ -139,16 +140,22 @@
                                 <i class="bi bi-search"></i> Buscar Vehículo por Placa
                             </h5>
                             <p class="text-muted">Ingrese la placa del vehículo para ver su información completa y la de su propietario</p>
-                            <form asp-action="SearchVehicleByPlate" method="post" class="row g-3">
+                            <form asp-action="SearchVehicleByPlate" method="post" class="row g-3" id="searchPlateForm">
                                 <div class="col-md-9">
                                     <div class="input-group input-group-lg">
                                         <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                                        <input type="text" name="plate" class="form-control" 
-                                               placeholder="Ingrese la placa del vehículo (ej: ABC-123)" 
+                                        <input type="text" 
+                                               name="plate" 
+                                               id="searchPlate"
+                                               class="form-control text-uppercase" 
+                                               placeholder="Formato: ABC-123" 
                                                required 
-                                               pattern="[A-Za-z0-9\-]+"
-                                               title="Ingrese una placa válida">
+                                               maxlength="7"
+                                               pattern="[A-Z]{3}-[0-9]{3}"
+                                               title="Formato requerido: ABC-123"
+                                               oninput="validateSearchPlate(this)">
                                     </div>
+                                    <small class="text-muted">Formato: ABC-123 (3 letras - 3 números)</small>
                                 </div>
                                 <div class="col-md-3">
                                     <button type="submit" class="btn btn-primary btn-lg w-100">
@@ -166,18 +173,43 @@
                                 <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Agregar Nuevo Vehículo</h5>
                             </div>
                             <div class="card-body">
-                                <form asp-action="CreateVehicle" method="post">
+                                <form asp-action="CreateVehicle" method="post" id="createVehicleForm">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="plate" class="form-label">Placa *</label>
-                                                <input type="text" class="form-control" id="plate" name="plate" placeholder="Ej: ABC-123" required>
+                                                <input type="text" 
+                                                       class="form-control text-uppercase" 
+                                                       id="plate" 
+                                                       name="plate" 
+                                                       placeholder="ABC-123" 
+                                                       required
+                                                       maxlength="7"
+                                                       pattern="[A-Z]{3}-[0-9]{3}"
+                                                       title="Formato requerido: 3 letras, guion, 3 números (Ej: ABC-123)"
+                                                       oninput="validatePlate(this)">
+                                                <small class="text-muted">Formato: ABC-123 (3 letras - 3 números)</small>
+                                                <div class="invalid-feedback" id="plateError">
+                                                    La placa debe seguir el formato ABC-123 (3 letras, guion, 3 números).
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="ownerIdentification" class="form-label">Identificación del Propietario *</label>
-                                                <input type="number" class="form-control" id="ownerIdentification" name="ownerIdentification" placeholder="Identificación de la persona" required>
+                                                <input type="number" 
+                                                       class="form-control" 
+                                                       id="ownerIdentification" 
+                                                       name="ownerIdentification" 
+                                                       placeholder="Identificación de la persona" 
+                                                       required
+                                                       min="1"
+                                                       max="999999999"
+                                                       oninput="validateOwnerIdentification(this)">
+                                                <small class="text-muted">Máximo 9 dígitos</small>
+                                                <div class="invalid-feedback" id="ownerIdError">
+                                                    La identificación es requerida (1-9 dígitos).
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -185,19 +217,54 @@
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="make" class="form-label">Marca *</label>
-                                                <input type="text" class="form-control" id="make" name="make" placeholder="Ej: Toyota" required>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="make" 
+                                                       name="make" 
+                                                       placeholder="Ej: Toyota" 
+                                                       required
+                                                       maxlength="50"
+                                                       pattern="[A-Za-zÀ-ÿ\s]+"
+                                                       title="Solo letras y espacios"
+                                                       oninput="validateTextOnly(this)">
+                                                <div class="invalid-feedback" id="makeError">
+                                                    La marca es requerida y solo puede contener letras.
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="model" class="form-label">Modelo *</label>
-                                                <input type="text" class="form-control" id="model" name="model" placeholder="Ej: Corolla" required>
+                                                <input type="text" 
+                                                       class="form-control" 
+                                                       id="model" 
+                                                       name="model" 
+                                                       placeholder="Ej: Corolla" 
+                                                       required
+                                                       maxlength="50"
+                                                       oninput="validateModel(this)">
+                                                <div class="invalid-feedback" id="modelError">
+                                                    El modelo es requerido.
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
                                                 <label for="year" class="form-label">Año *</label>
-                                                <input type="number" class="form-control" id="year" name="year" placeholder="2024" min="1900" max="2030" value="2024" required>
+                                                <input type="number" 
+                                                       class="form-control" 
+                                                       id="year" 
+                                                       name="year" 
+                                                       placeholder="2024" 
+                                                       min="1900" 
+                                                       max="2030" 
+                                                       value="2024" 
+                                                       required
+                                                       oninput="validateYear(this)">
+                                                <small class="text-muted">Entre 1900 y 2030</small>
+                                                <div class="invalid-feedback" id="yearError">
+                                                    El año debe estar entre 1900 y 2030.
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -205,7 +272,7 @@
                                         <button type="button" class="btn btn-secondary me-md-2" data-bs-toggle="collapse" data-bs-target="#addVehicleForm">
                                             <i class="bi bi-x-circle"></i> Cancelar
                                         </button>
-                                        <button type="submit" class="btn btn-success">
+                                        <button type="submit" class="btn btn-success" id="createVehicleBtn">
                                             <i class="bi bi-check-circle"></i> Crear Vehículo
                                         </button>
                                     </div>
@@ -259,8 +326,9 @@
                                                                 <i class="bi bi-pencil"></i> Editar
                                                             </a>
                                                             <button type="button" 
-                                                                    class="btn btn-sm btn-danger" 
-                                                                    onclick="confirmarEliminacionVehiculo('@vehicle.Plate', '@vehicle.Make @vehicle.Model')"
+                                                                    class="btn btn-sm btn-danger delete-vehicle-btn" 
+                                                                    data-plate="@vehicle.Plate"
+                                                                    data-description="@vehicle.Make @vehicle.Model"
                                                                     title="Eliminar vehículo">
                                                                 <i class="bi bi-trash"></i> Eliminar
                                                             </button>
@@ -313,16 +381,232 @@
         if (addVehicleForm) {
             addVehicleForm.addEventListener('hidden.bs.collapse', function () {
                 var form = document.querySelector('#addVehicleForm form');
-                if (form) form.reset();
+                if (form) {
+                    form.reset();
+                    // Limpiar clases de validación
+                    form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    form.querySelectorAll('.is-valid').forEach(el => el.classList.remove('is-valid'));
+                }
             });
         }
 
-        // Función para confirmar eliminación de vehículo (reutilizada)
+        // Validación de placa con formato AAA-123
+        function validatePlate(input) {
+            let value = input.value.toUpperCase();
+            
+            // Remover cualquier caracter que no sea letra, número o guion
+            value = value.replace(/[^A-Z0-9\-]/g, '');
+            
+            // Asegurar que solo haya un guion y esté en la posición correcta
+            const parts = value.split('-');
+            if (parts.length > 2) {
+                // Si hay más de un guion, mantener solo los dos primeros segmentos
+                value = parts[0] + '-' + parts.slice(1).join('');
+            }
+            
+            // Formatear automáticamente: primero 3 letras, luego guion, luego 3 números
+            let formatted = '';
+            let letterCount = 0;
+            let numberCount = 0;
+            let hasHyphen = false;
+            
+            for (let i = 0; i < value.length; i++) {
+                const char = value[i];
+                
+                if (letterCount < 3 && /[A-Z]/.test(char)) {
+                    formatted += char;
+                    letterCount++;
+                } else if (letterCount === 3 && !hasHyphen) {
+                    if (char !== '-') {
+                        formatted += '-';
+                        hasHyphen = true;
+                        if (/[0-9]/.test(char)) {
+                            formatted += char;
+                            numberCount++;
+                        }
+                    } else {
+                        formatted += char;
+                        hasHyphen = true;
+                    }
+                } else if (hasHyphen && numberCount < 3 && /[0-9]/.test(char)) {
+                    formatted += char;
+                    numberCount++;
+                }
+            }
+            
+            input.value = formatted;
+            
+            // Validar formato completo: ABC-123
+            const plateRegex = /^[A-Z]{3}-[0-9]{3}$/;
+            if (plateRegex.test(formatted)) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            } else if (formatted.length > 0) {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+            } else {
+                input.classList.remove('is-invalid');
+                input.classList.remove('is-valid');
+            }
+        }
+
+        // Validación de identificación del propietario
+        function validateOwnerIdentification(input) {
+            // Remover caracteres no numéricos
+            input.value = input.value.replace(/[^0-9]/g, '');
+            
+            // Limitar a 9 dígitos
+            if (input.value.length > 9) {
+                input.value = input.value.substring(0, 9);
+            }
+            
+            const numValue = parseInt(input.value);
+            if (input.value && numValue > 0 && input.value.length <= 9) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            } else if (input.value) {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+            }
+        }
+
+        // Validación de marca (solo letras)
+        function validateTextOnly(input) {
+            const value = input.value;
+            // Permitir letras con acentos y espacios
+            const regex = /^[A-Za-zÀ-ÿ\s]*$/;
+            if (!regex.test(value)) {
+                input.value = value.replace(/[^A-Za-zÀ-ÿ\s]/g, '');
+            }
+            
+            if (input.value.trim().length > 0) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            } else if (input.value.length > 0) {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+            }
+        }
+
+        // Validación de modelo
+        function validateModel(input) {
+            if (input.value.trim().length > 0 && input.value.length <= 50) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            } else if (input.value.length > 50) {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+            }
+        }
+
+        // Validación de año
+        function validateYear(input) {
+            const year = parseInt(input.value);
+            if (year >= 1900 && year <= 2030) {
+                input.classList.remove('is-invalid');
+                input.classList.add('is-valid');
+            } else if (input.value) {
+                input.classList.add('is-invalid');
+                input.classList.remove('is-valid');
+            }
+        }
+
+        // Validación al enviar el formulario
+        var createForm = document.getElementById('createVehicleForm');
+        if (createForm) {
+            createForm.addEventListener('submit', function(e) {
+                const plate = document.getElementById('plate');
+                const ownerIdentification = document.getElementById('ownerIdentification');
+                const make = document.getElementById('make');
+                const model = document.getElementById('model');
+                const year = document.getElementById('year');
+                
+                let isValid = true;
+                let errorMessage = '';
+
+                // Validar placa con formato AAA-123
+                const plateRegex = /^[A-Z]{3}-[0-9]{3}$/;
+                if (!plate.value.trim() || !plateRegex.test(plate.value)) {
+                    plate.classList.add('is-invalid');
+                    errorMessage += 'La placa debe seguir el formato ABC-123 (3 letras, guion, 3 números).\n';
+                    isValid = false;
+                }
+
+                // Validar identificación del propietario
+                const ownerId = parseInt(ownerIdentification.value);
+                if (!ownerIdentification.value || ownerId <= 0 || ownerIdentification.value.length > 9) {
+                    ownerIdentification.classList.add('is-invalid');
+                    errorMessage += 'La identificación del propietario debe ser válida (1-9 dígitos).\n';
+                    isValid = false;
+                }
+
+                // Validar marca
+                if (!make.value.trim()) {
+                    make.classList.add('is-invalid');
+                    errorMessage += 'La marca es requerida.\n';
+                    isValid = false;
+                }
+
+                // Validar modelo
+                if (!model.value.trim()) {
+                    model.classList.add('is-invalid');
+                    errorMessage += 'El modelo es requerido.\n';
+                    isValid = false;
+                }
+
+                // Validar año
+                const yearValue = parseInt(year.value);
+                if (!year.value || yearValue < 1900 || yearValue > 2030) {
+                    year.classList.add('is-invalid');
+                    errorMessage += 'El año debe estar entre 1900 y 2030.\n';
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Por favor corrija los siguientes errores:\n\n' + errorMessage);
+                    return false;
+                }
+            });
+        }
+
+        // Función para confirmar eliminación de vehículo
         function confirmarEliminacionVehiculo(placa, descripcion) {
             if (confirm('¿Está seguro que desea eliminar el vehículo ' + descripcion + ' (Placa: ' + placa + ')?\n\nEsta acción no se puede deshacer.')) {
                 document.getElementById('deletePlate').value = placa;
                 document.getElementById('deleteVehicleForm').submit();
             }
+        }
+
+        // Event listener para botones de eliminar vehículo
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.delete-vehicle-btn')) {
+                const button = e.target.closest('.delete-vehicle-btn');
+                const plate = button.getAttribute('data-plate');
+                const description = button.getAttribute('data-description');
+                confirmarEliminacionVehiculo(plate, description);
+            }
+        });
+
+        // Validación de placa en búsqueda (reutiliza la misma lógica)
+        function validateSearchPlate(input) {
+            validatePlate(input);
+        }
+
+        // Validación del formulario de búsqueda
+        var searchForm = document.getElementById('searchPlateForm');
+        if (searchForm) {
+            searchForm.addEventListener('submit', function(e) {
+                const searchPlate = document.getElementById('searchPlate');
+                const plateRegex = /^[A-Z]{3}-[0-9]{3}$/;
+                
+                if (!plateRegex.test(searchPlate.value)) {
+                    e.preventDefault();
+                    searchPlate.classList.add('is-invalid');
+                    alert('La placa debe seguir el formato ABC-123 (3 letras, guion, 3 números).');
+                    return false;
+                }
+            });
         }
     </script>
 }

@@ -94,22 +94,59 @@
                         <div class="collapse mt-3" id="addPersonForm">
                             <form asp-action="CreatePerson" method="post">
                                 <div class="mb-2">
-                                    <input type="number" name="identification" class="form-control" placeholder="Identificación *" required>
+                                    <label for="identification" class="form-label">Identificación *</label>
+                                    <input type="number" 
+                                           id="identification" 
+                                           name="identification" 
+                                           class="form-control" 
+                                           placeholder="Identificación" 
+                                           required>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="text" name="firstName" class="form-control" placeholder="Nombre *" required>
+                                    <label for="firstName" class="form-label">Nombre *</label>
+                                    <input type="text" 
+                                           id="firstName" 
+                                           name="firstName" 
+                                           class="form-control" 
+                                           placeholder="Nombre" 
+                                           required>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="text" name="lastName" class="form-control" placeholder="Apellido *" required>
+                                    <label for="lastName" class="form-label">Apellido *</label>
+                                    <input type="text" 
+                                           id="lastName" 
+                                           name="lastName" 
+                                           class="form-control" 
+                                           placeholder="Apellido" 
+                                           required>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="email" name="email" class="form-control" placeholder="Email *" required>
+                                    <label for="email" class="form-label">Email *</label>
+                                    <input type="email" 
+                                           id="email" 
+                                           name="email" 
+                                           class="form-control" 
+                                           placeholder="correo@ejemplo.com" 
+                                           required>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="number" name="phone" class="form-control" placeholder="Teléfono *" required>
+                                    <label for="phone" class="form-label">Teléfono *</label>
+                                    <input type="number" 
+                                           id="phone" 
+                                           name="phone" 
+                                           class="form-control" 
+                                           placeholder="Teléfono" 
+                                           required>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="number" step="0.01" name="salario" class="form-control" placeholder="Salario *" required>
+                                    <label for="salario" class="form-label">Salario *</label>
+                                    <input type="number" 
+                                           step="0.01" 
+                                           id="salario" 
+                                           name="salario" 
+                                           class="form-control" 
+                                           placeholder="Salario" 
+                                           required>
                                 </div>
                                 <button type="submit" class="btn btn-success">Crear Persona</button>
                             </form>
@@ -173,8 +210,9 @@
                                                         <i class="bi bi-pencil"></i> Editar
                                                     </a>
                                                     <button type="button" 
-                                                            class="btn btn-sm btn-danger" 
-                                                            onclick="confirmarEliminacion('@person.Identification', '@person.FullName')"
+                                                            class="btn btn-sm btn-danger delete-person-btn" 
+                                                            data-identification="@person.Identification"
+                                                            data-name="@person.FullName"
                                                             title="Eliminar persona">
                                                         <i class="bi bi-trash"></i> Eliminar
                                                     </button>
@@ -214,6 +252,19 @@
             });
         }, 5000);
 
+        // Limpiar formulario cuando se cierra
+        var addPersonForm = document.getElementById('addPersonForm');
+        if (addPersonForm) {
+            addPersonForm.addEventListener('hidden.bs.collapse', function () {
+                var form = document.querySelector('#addPersonForm form');
+                if (form) {
+                    form.reset();
+                    form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    form.querySelectorAll('.is-valid').forEach(el => el.classList.remove('is-valid'));
+                }
+            });
+        }
+
         // Función para confirmar eliminación
         function confirmarEliminacion(identification, nombre) {
             if (confirm('¿Está seguro que desea eliminar a ' + nombre + ' (ID: ' + identification + ')?\n\nEsta acción no se puede deshacer.')) {
@@ -221,5 +272,15 @@
                 document.getElementById('deleteForm').submit();
             }
         }
+
+        // Event listener para botones de eliminar
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.delete-person-btn')) {
+                const button = e.target.closest('.delete-person-btn');
+                const identification = button.getAttribute('data-identification');
+                const name = button.getAttribute('data-name');
+                confirmarEliminacion(identification, name);
+            }
+        });
     </script>
 }
