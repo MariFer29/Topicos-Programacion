@@ -27,10 +27,10 @@ namespace PersonVehicle.BL
                 return Mensajes;
             }
 
-            // Validación: longitud de la cédula
-            if (person.Identification.ToString().Length != 9)
+            // Validación: longitud de la cédula (debe tener entre 1 y 9 dígitos)
+            if (person.Identification <= 0 || person.Identification.ToString().Length > 9)
             {
-                var Mensaje = new msjResp { id = -1, Mensaje = "❗La cédula de la persona no puede ser 0 ni tener más de 9 digitos." };
+                var Mensaje = new msjResp { id = -1, Mensaje = "❗La cédula de la persona debe tener entre 1 y 9 dígitos." };
                 var Mensajes = new List<msjResp>();
                 Mensajes.Add(Mensaje);
                 return Mensajes;

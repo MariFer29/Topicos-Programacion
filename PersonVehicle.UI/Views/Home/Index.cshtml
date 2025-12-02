@@ -92,15 +92,21 @@
                             Mostrar Formulario
                         </button>
                         <div class="collapse mt-3" id="addPersonForm">
-                            <form asp-action="CreatePerson" method="post">
+                            <form asp-action="CreatePerson" method="post" id="createPersonForm">
                                 <div class="mb-2">
                                     <label for="identification" class="form-label">Identificación *</label>
                                     <input type="number" 
                                            id="identification" 
                                            name="identification" 
                                            class="form-control" 
-                                           placeholder="Identificación" 
-                                           required>
+                                           placeholder="Identificación (máximo 9 dígitos)" 
+                                           required
+                                           min="1"
+                                           max="999999999">
+                                    <small class="text-muted">Máximo 9 dígitos</small>
+                                    <div class="invalid-feedback">
+                                        La identificación debe ser entre 1 y 9 dígitos.
+                                    </div>
                                 </div>
                                 <div class="mb-2">
                                     <label for="firstName" class="form-label">Nombre *</label>
@@ -109,7 +115,14 @@
                                            name="firstName" 
                                            class="form-control" 
                                            placeholder="Nombre" 
-                                           required>
+                                           required
+                                           maxlength="50"
+                                           pattern="[A-Za-zÀ-ÿ\s]+"
+                                           title="Solo letras y espacios">
+                                    <small class="text-muted">Solo letras, máximo 50 caracteres</small>
+                                    <div class="invalid-feedback">
+                                        El nombre es requerido y solo puede contener letras.
+                                    </div>
                                 </div>
                                 <div class="mb-2">
                                     <label for="lastName" class="form-label">Apellido *</label>
@@ -118,7 +131,14 @@
                                            name="lastName" 
                                            class="form-control" 
                                            placeholder="Apellido" 
-                                           required>
+                                           required
+                                           maxlength="50"
+                                           pattern="[A-Za-zÀ-ÿ\s]+"
+                                           title="Solo letras y espacios">
+                                    <small class="text-muted">Solo letras, máximo 50 caracteres</small>
+                                    <div class="invalid-feedback">
+                                        El apellido es requerido y solo puede contener letras.
+                                    </div>
                                 </div>
                                 <div class="mb-2">
                                     <label for="email" class="form-label">Email *</label>
@@ -127,7 +147,12 @@
                                            name="email" 
                                            class="form-control" 
                                            placeholder="correo@ejemplo.com" 
-                                           required>
+                                           required
+                                           maxlength="100">
+                                    <small class="text-muted">Formato de email válido</small>
+                                    <div class="invalid-feedback">
+                                        Por favor ingrese un email válido.
+                                    </div>
                                 </div>
                                 <div class="mb-2">
                                     <label for="phone" class="form-label">Teléfono *</label>
@@ -135,8 +160,14 @@
                                            id="phone" 
                                            name="phone" 
                                            class="form-control" 
-                                           placeholder="Teléfono" 
-                                           required>
+                                           placeholder="Teléfono (8 dígitos)" 
+                                           required
+                                           min="10000000"
+                                           max="99999999">
+                                    <small class="text-muted">8 dígitos exactos</small>
+                                    <div class="invalid-feedback">
+                                        El teléfono debe tener exactamente 8 dígitos.
+                                    </div>
                                 </div>
                                 <div class="mb-2">
                                     <label for="salario" class="form-label">Salario *</label>
@@ -145,10 +176,15 @@
                                            id="salario" 
                                            name="salario" 
                                            class="form-control" 
-                                           placeholder="Salario" 
-                                           required>
+                                           placeholder="Salario (mayor a 0)" 
+                                           required
+                                           min="0.01">
+                                    <small class="text-muted">Debe ser mayor a 0</small>
+                                    <div class="invalid-feedback">
+                                        El salario debe ser mayor a 0.
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn btn-success">Crear Persona</button>
+                                <button type="submit" class="btn btn-success" id="createPersonBtn">Crear Persona</button>
                             </form>
                         </div>
                     </div>
@@ -261,6 +297,195 @@
                     form.reset();
                     form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
                     form.querySelectorAll('.is-valid').forEach(el => el.classList.remove('is-valid'));
+                }
+            });
+        }
+
+        function removeNonNumeric(value) {
+            return value.replace(/\D/g, '');
+        }
+
+        function removeNonLetters(value) {
+            var regex = new RegExp('[^A-Za-zÀ-ÿ\\s]', 'g');
+            return value.replace(regex, '');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const identificationInput = document.getElementById('identification');
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const salarioInput = document.getElementById('salario');
+
+            // Validación de identificación
+            if (identificationInput) {
+                identificationInput.addEventListener('input', function() {
+                    this.value = removeNonNumeric(this.value);
+                    
+                    if (this.value.length > 9) {
+                        this.value = this.value.substring(0, 9);
+                    }
+                    
+                    const numValue = parseInt(this.value);
+                    if (this.value && numValue > 0 && this.value.length <= 9) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de nombre
+            if (firstNameInput) {
+                firstNameInput.addEventListener('input', function() {
+                    this.value = removeNonLetters(this.value);
+                    
+                    if (this.value.trim().length > 0 && this.value.length <= 50) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value.length > 50) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de apellido
+            if (lastNameInput) {
+                lastNameInput.addEventListener('input', function() {
+                    this.value = removeNonLetters(this.value);
+                    
+                    if (this.value.trim().length > 0 && this.value.length <= 50) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value.length > 50) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de email
+            if (emailInput) {
+                emailInput.addEventListener('input', function() {
+                    var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                    if (emailRegex.test(this.value) && this.value.length <= 100) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de teléfono
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    this.value = removeNonNumeric(this.value);
+                    
+                    if (this.value.length > 8) {
+                        this.value = this.value.substring(0, 8);
+                    }
+                    
+                    if (this.value.length === 8) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de salario
+            if (salarioInput) {
+                salarioInput.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    if (value > 0) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+        });
+
+        // Validación al enviar el formulario de persona
+        var createPersonForm = document.getElementById('createPersonForm');
+        if (createPersonForm) {
+            createPersonForm.addEventListener('submit', function(e) {
+                const identification = document.getElementById('identification');
+                const firstName = document.getElementById('firstName');
+                const lastName = document.getElementById('lastName');
+                const email = document.getElementById('email');
+                const phone = document.getElementById('phone');
+                const salario = document.getElementById('salario');
+                
+                let isValid = true;
+                let errorMessage = '';
+
+                // Validar identificación
+                const identValue = parseInt(identification.value);
+                if (!identification.value || identValue <= 0 || identification.value.length > 9) {
+                    identification.classList.add('is-invalid');
+                    errorMessage += '• La identificación debe ser válida (1-9 dígitos).\n';
+                    isValid = false;
+                }
+
+                // Validar nombre
+                var nameRegex = new RegExp('^[A-Za-zÀ-ÿ\\s]+$');
+                if (!firstName.value.trim() || firstName.value.length > 50 || !nameRegex.test(firstName.value)) {
+                    firstName.classList.add('is-invalid');
+                    errorMessage += '• El nombre es requerido, solo letras (máximo 50 caracteres).\n';
+                    isValid = false;
+                }
+
+                // Validar apellido
+                if (!lastName.value.trim() || lastName.value.length > 50 || !nameRegex.test(lastName.value)) {
+                    lastName.classList.add('is-invalid');
+                    errorMessage += '• El apellido es requerido, solo letras (máximo 50 caracteres).\n';
+                    isValid = false;
+                }
+
+                // Validar email
+                var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                if (!emailRegex.test(email.value) || email.value.length > 100) {
+                    email.classList.add('is-invalid');
+                    errorMessage += '• Por favor ingrese un email válido.\n';
+                    isValid = false;
+                }
+
+                // Validar teléfono (8 dígitos exactos)
+                if (phone.value.length !== 8) {
+                    phone.classList.add('is-invalid');
+                    errorMessage += '• El teléfono debe tener exactamente 8 dígitos.\n';
+                    isValid = false;
+                }
+
+                // Validar salario
+                const salarioValue = parseFloat(salario.value);
+                if (!salario.value || salarioValue <= 0) {
+                    salario.classList.add('is-invalid');
+                    errorMessage += '• El salario debe ser mayor a 0.\n';
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Por favor corrija los siguientes errores:\n\n' + errorMessage);
+                    return false;
                 }
             });
         }

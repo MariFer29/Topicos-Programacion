@@ -126,7 +126,7 @@ namespace PersonVehicle.UI.Controllers
             person.LastName = person.LastName.Trim();
             person.Email = person.Email.Trim().ToLower();
 
-            var success = await _apiService.AgregarPersonaAsync(person);
+            var (success, message) = await _apiService.AgregarPersonaAsync(person);
 
             if (success)
             {
@@ -134,7 +134,7 @@ namespace PersonVehicle.UI.Controllers
             }
             else
             {
-                TempData["Error"] = "Error al crear la persona. Verifique que la identificación no exista ya en el sistema.";
+                TempData["Error"] = message ?? "No fue posible registrar la persona. Verifique que la identificación no exista ya en el sistema.";
             }
 
             return RedirectToAction("Index");

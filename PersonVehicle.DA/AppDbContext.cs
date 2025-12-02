@@ -14,7 +14,6 @@ namespace PersonVehicle.DA
         public DbSet<Persons> Persons { get; set; }    // Tabla de personas
         public DbSet<Vehicles> Vehicles { get; set; }  // Tabla de vehículos
         public DbSet<Owner> Owner { get; set; }        // Tabla de propietarios (relación persona-vehículo)
-        public DbSet<msjResp> msjResp { get; set; }    // Tabla para mensajes (poco usual pero válida si se requiere persistir mensajes)
 
         // Configuración de relaciones y restricciones entre entidades
         protected override void OnModelCreating(ModelBuilder modelBuilder)

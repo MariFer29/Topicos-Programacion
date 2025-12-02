@@ -21,7 +21,7 @@ namespace PersonVehicle.UI.Services
 
         // ==================== PERSONAS ====================
 
-        public async Task<bool> AgregarPersonaAsync(Persons person)
+        public async Task<(bool success, string message)> AgregarPersonaAsync(Persons person)
         {
             try
             {
@@ -29,11 +29,33 @@ namespace PersonVehicle.UI.Services
                 var json = JsonConvert.SerializeObject(person, _jsonSettings);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PostAsync("api/persons", content);
-                return response.IsSuccessStatusCode;
+                
+                var responseContent = await response.Content.ReadAsStringAsync();
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    // La respuesta exitosa contiene el mensaje
+                    var message = responseContent.Trim('"'); // Remover comillas si es un string JSON
+                    Console.WriteLine($"? Persona creada exitosamente: {message}");
+                    return (true, message);
+                }
+                else
+                {
+                    // La respuesta de error contiene el mensaje de error
+                    var errorMessage = responseContent.Trim('"');
+                    Console.WriteLine($"? Error al crear persona: {errorMessage}");
+                    return (false, errorMessage);
+                }
             }
-            catch
+            catch (HttpRequestException ex)
             {
-                return false;
+                Console.WriteLine($"?? Error de conexión: {ex.Message}");
+                return (false, "No se pudo conectar con el servidor. Verifique que la API esté ejecutándose.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"?? Excepción al crear persona: {ex.Message}");
+                return (false, $"Error inesperado: {ex.Message}");
             }
         }
 
