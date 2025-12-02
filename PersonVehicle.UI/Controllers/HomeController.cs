@@ -323,6 +323,14 @@ namespace PersonVehicle.UI.Controllers
                 PersonIdentification = ownerIdentification
             };
 
+
+            var existing = await _apiService.ObtengaListaDeVehiculoPorPlaca(plate);
+            if (existing != null)
+            {
+                TempData["Error"] = $"La placa {plate} ya está registrada. No se puede duplicar.";
+                return RedirectToAction("AllVehicles");
+            }
+
             var success = await _apiService.AgregueNuevoVehiculo(vehicle);
             
             if (success)
