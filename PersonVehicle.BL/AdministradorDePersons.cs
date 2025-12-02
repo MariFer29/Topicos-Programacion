@@ -99,6 +99,10 @@ namespace PersonVehicle.BL
             if (PersonaAMOdificar == null)
                 return $"❗La persona con la identificación {identification} no fue encontrada.";
 
+            // VALIDACIÓN: Teléfono debe ser exactamente 8 dígitos
+            if (dto.Phone < 10000000 || dto.Phone > 99999999)
+                return "❗El número de teléfono debe tener exactamente 8 dígitos.";
+
             // Actualización de campos
             PersonaAMOdificar.FirstName = dto.FirstName;
             PersonaAMOdificar.LastName = dto.LastName;
@@ -111,6 +115,7 @@ namespace PersonVehicle.BL
 
             return $"La persona con la identificación {identification} fue actualizada con éxito.";
         }
+
 
         // Eliminar una persona por identificación
         public async Task<String> EliminarPersonAsync(int identification)
