@@ -1,5 +1,6 @@
 ﻿using PersonVehicle.BL;
 using PersonVehicle.Model;
+using PersonVehicle.Model.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace PersonVehicle.DA
@@ -29,7 +30,8 @@ namespace PersonVehicle.DA
                 .FirstOrDefaultAsync(p => p.Plate == plate);
         }
 
-        // Devuelve la lista de vehículos incluyendo información del propietario y persona.
+        // Devuelve la lista de vehículos incluyendo solo el ID del propietario.
+        // NO se modifica - sigue devolviendo solo PersonIdentification
         public async Task<IEnumerable<Vehicles>> ObtenerVehicleAsync()
         {
             return await _context.Vehicles
@@ -41,7 +43,9 @@ namespace PersonVehicle.DA
                     Make = v.Make,
                     Model = v.Model,
                     Year = v.Year,
-                    PersonIdentification = v.Owner.Person.Identification
+                    PersonIdentification = v.Owner != null && v.Owner.Person != null 
+                        ? v.Owner.Person.Identification 
+                        : 0
                 })
                 .ToListAsync();
         }
@@ -73,22 +77,49 @@ namespace PersonVehicle.DA
             }
         }
 
-        // Obtiene un vehículo junto con su owner y la identificación de la persona.
+        // Obtiene un vehículo junto con su owner y toda la información de la persona.
+        // MODIFICADO - Ahora devuelve un DTO con toda la información
         public async Task<Vehicles?> ObtenerVehiculoConOwnerAsync(string plate)
         {
-            return await _context.Vehicles
+            var result = await _context.Vehicles
                 .Include(v => v.Owner)             // Carga el owner asociado.
                     .ThenInclude(o => o.Person)    // Carga la persona del owner.
                 .Where(v => v.Plate == plate)
-                .Select(v => new Vehicles          // Proyección limpia.
-                {
-                    Plate = v.Plate,
-                    Make = v.Make,
-                    Model = v.Model,
-                    Year = v.Year,
-                    PersonIdentification = v.Owner.Person.Identification
-                })
                 .FirstOrDefaultAsync();
+
+            if (result != null && result.Owner != null && result.Owner.Person != null)
+            {
+                // Crear objeto con toda la información usando propiedades simples
+                // que se pueden serializar sin problemas
+                return new Vehicles
+                {
+                    idVehicle = result.idVehicle,
+                    Plate = result.Plate,
+                    Make = result.Make,
+                    Model = result.Model,
+                    Year = result.Year,
+                    PersonIdentification = result.Owner.Person.Identification,
+                    // Usamos un objeto anónimo mapeado a Owner para evitar JsonIgnore
+                    Owner = new Owner
+                    {
+                        idOwner = result.Owner.idOwner,
+                        Person_idPerson = result.Owner.Person_idPerson,
+                        OwnerIdentification = result.Owner.Person.Identification,
+                        Person = new Persons
+                        {
+                            idPerson = result.Owner.Person.idPerson,
+                            Identification = result.Owner.Person.Identification,
+                            FirstName = result.Owner.Person.FirstName,
+                            LastName = result.Owner.Person.LastName,
+                            Email = result.Owner.Person.Email,
+                            Phone = result.Owner.Person.Phone,
+                            Salario = result.Owner.Person.Salario
+                        }
+                    }
+                };
+            }
+
+            return result;
         }
     }
 }

@@ -174,6 +174,7 @@ namespace PersonVehicle.BL
             {
                 throw new Exception($"El vehiculo con la placa {plate} no fue encontrada.");
             }
+            
             return VehiPlate;
         }
 

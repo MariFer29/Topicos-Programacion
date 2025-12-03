@@ -42,7 +42,14 @@ namespace PersonVehicle.DA
         {
             await _context.Owner.AddAsync(owner);        // Agrega el propietario al contexto.
             await _context.SaveChangesAsync();           // Guarda los cambios en la base.
-            return await _context.msjResp.ToListAsync(); // Devuelve los mensajes generados.
+            
+            // Devuelve un mensaje de éxito en memoria (no consulta la base de datos)
+            var mensaje = new msjResp 
+            { 
+                id = 1, 
+                Mensaje = "Propietario registrado con éxito." 
+            };
+            return new List<msjResp> { mensaje };
         }
 
         // Actualiza la información de un propietario existente.

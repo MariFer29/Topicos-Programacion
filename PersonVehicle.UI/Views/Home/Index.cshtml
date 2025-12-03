@@ -11,7 +11,7 @@
             @if (TempData["Success"] != null)
             {
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <strong>Éxito:</strong> @TempData["Success"]
+                    <strong>¡Éxito:</strong> @TempData["Success"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             }
@@ -34,6 +34,7 @@
                     <p><strong>Nombre:</strong> @person.FullName</p>
                     <p><strong>Email:</strong> @person.Email</p>
                     <p><strong>Teléfono:</strong> @person.Phone</p>
+                    <p><strong>Salario:</strong> @person.Salario.ToString("C")</p>
                     @if (person.Vehicles != null && person.Vehicles.Any())
                     {
                         <p><strong>Vehículos:</strong></p>
@@ -77,7 +78,7 @@
                     <div class="mb-3">
                         <h6>Consultar Persona por Identificación</h6>
                         <form asp-action="SearchPersonByIdentification" method="post" class="d-flex">
-                            <input type="text" name="identification" class="form-control me-2" placeholder="Ingrese identificación" required>
+                            <input type="number" name="identification" class="form-control me-2" placeholder="Ingrese identificación" required>
                             <button type="submit" class="btn btn-outline-primary">Buscar</button>
                         </form>
                     </div>
@@ -91,23 +92,99 @@
                             Mostrar Formulario
                         </button>
                         <div class="collapse mt-3" id="addPersonForm">
-                            <form asp-action="CreatePerson" method="post">
+                            <form asp-action="CreatePerson" method="post" id="createPersonForm">
                                 <div class="mb-2">
-                                    <input type="text" name="identification" class="form-control" placeholder="Identificación *" required>
+                                    <label for="identification" class="form-label">Identificación *</label>
+                                    <input type="number" 
+                                           id="identification" 
+                                           name="identification" 
+                                           class="form-control" 
+                                           placeholder="Identificación (máximo 9 dígitos)" 
+                                           required
+                                           min="1"
+                                           max="999999999">
+                                    <small class="text-muted">Máximo 9 dígitos</small>
+                                    <div class="invalid-feedback">
+                                        La identificación debe ser entre 1 y 9 dígitos.
+                                    </div>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="text" name="firstName" class="form-control" placeholder="Nombre *" required>
+                                    <label for="firstName" class="form-label">Nombre *</label>
+                                    <input type="text" 
+                                           id="firstName" 
+                                           name="firstName" 
+                                           class="form-control" 
+                                           placeholder="Nombre" 
+                                           required
+                                           maxlength="50"
+                                           pattern="[A-Za-zÀ-ÿ\s]+"
+                                           title="Solo letras y espacios">
+                                    <small class="text-muted">Solo letras, máximo 50 caracteres</small>
+                                    <div class="invalid-feedback">
+                                        El nombre es requerido y solo puede contener letras.
+                                    </div>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="text" name="lastName" class="form-control" placeholder="Apellido">
+                                    <label for="lastName" class="form-label">Apellido *</label>
+                                    <input type="text" 
+                                           id="lastName" 
+                                           name="lastName" 
+                                           class="form-control" 
+                                           placeholder="Apellido" 
+                                           required
+                                           maxlength="50"
+                                           pattern="[A-Za-zÀ-ÿ\s]+"
+                                           title="Solo letras y espacios">
+                                    <small class="text-muted">Solo letras, máximo 50 caracteres</small>
+                                    <div class="invalid-feedback">
+                                        El apellido es requerido y solo puede contener letras.
+                                    </div>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="email" name="email" class="form-control" placeholder="Email">
+                                    <label for="email" class="form-label">Email *</label>
+                                    <input type="email" 
+                                           id="email" 
+                                           name="email" 
+                                           class="form-control" 
+                                           placeholder="correo@ejemplo.com" 
+                                           required
+                                           maxlength="100">
+                                    <small class="text-muted">Formato de email válido</small>
+                                    <div class="invalid-feedback">
+                                        Por favor ingrese un email válido.
+                                    </div>
                                 </div>
                                 <div class="mb-2">
-                                    <input type="text" name="phone" class="form-control" placeholder="Teléfono">
+                                    <label for="phone" class="form-label">Teléfono *</label>
+                                    <input type="number" 
+                                           id="phone" 
+                                           name="phone" 
+                                           class="form-control" 
+                                           placeholder="Teléfono (8 dígitos)" 
+                                           required
+                                           min="10000000"
+                                           max="99999999">
+                                    <small class="text-muted">8 dígitos exactos</small>
+                                    <div class="invalid-feedback">
+                                        El teléfono debe tener exactamente 8 dígitos.
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn btn-success">Crear Persona</button>
+                                <div class="mb-2">
+                                    <label for="salario" class="form-label">Salario *</label>
+                                    <input type="number" 
+                                           step="0.01" 
+                                           id="salario" 
+                                           name="salario" 
+                                           class="form-control" 
+                                           placeholder="Salario (mayor a 0)" 
+                                           required
+                                           min="0.01">
+                                    <small class="text-muted">Debe ser mayor a 0</small>
+                                    <div class="invalid-feedback">
+                                        El salario debe ser mayor a 0.
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success" id="createPersonBtn">Crear Persona</button>
                             </form>
                         </div>
                     </div>
@@ -121,17 +198,6 @@
                     <h4>Gestión de Vehículos</h4>
                 </div>
                 <div class="card-body">
-                    <!-- Consultar vehículos por dueño -->
-                    <div class="mb-3">
-                        <h6>Consultar Vehículos por Identificación del Propietario</h6>
-                        <form asp-action="SearchVehiclesByOwner" method="post" class="d-flex">
-                            <input type="text" name="ownerIdentification" class="form-control me-2" placeholder="Identificación del propietario" required>
-                            <button type="submit" class="btn btn-outline-info">Buscar</button>
-                        </form>
-                    </div>
-
-                    <hr>
-
                     <!-- Ver todos los vehículos -->
                     <div class="mb-3">
                         <h6>Listar Todos los Vehículos</h6>
@@ -150,7 +216,7 @@
                     <h4>Lista de Todas las Personas</h4>
                 </div>
                 <div class="card-body">
-                    @if (ViewBag.Persons != null && ((List<PersonVehicle.UI.Models.Persosn>)ViewBag.Persons).Any())
+                    @if (ViewBag.Persons != null && ((List<PersonVehicle.UI.Models.Persons>)ViewBag.Persons).Any())
                     {
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -160,20 +226,33 @@
                                         <th>Nombre Completo</th>
                                         <th>Email</th>
                                         <th>Teléfono</th>
+                                        <th>Salario</th>
                                         <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var person in (List<PersonVehicle.UI.Models.Persosn>)ViewBag.Persons)
+                                    @foreach (var person in (List<PersonVehicle.UI.Models.Persons>)ViewBag.Persons)
                                     {
                                         <tr>
                                             <td>@person.Identification</td>
                                             <td>@person.FullName</td>
                                             <td>@person.Email</td>
                                             <td>@person.Phone</td>
+                                            <td>@person.Salario.ToString("C")</td>
                                             <td>
-                                                <a asp-action="EditPerson" asp-route-identification="@person.Identification" 
-                                                   class="btn btn-sm btn-warning">Editar</a>
+                                                <div class="btn-group" role="group">
+                                                    <a asp-action="EditPerson" asp-route-identification="@person.Identification" 
+                                                       class="btn btn-sm btn-warning" title="Editar persona">
+                                                        <i class="bi bi-pencil"></i> Editar
+                                                    </a>
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-danger delete-person-btn" 
+                                                            data-identification="@person.Identification"
+                                                            data-name="@person.FullName"
+                                                            title="Eliminar persona">
+                                                        <i class="bi bi-trash"></i> Eliminar
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     }
@@ -193,6 +272,11 @@
     </div>
 </div>
 
+<!-- Formulario oculto para eliminar -->
+<form id="deleteForm" asp-action="DeletePerson" method="post" style="display: none;">
+    <input type="hidden" id="deleteIdentification" name="identification" />
+</form>
+
 @section Scripts {
     <script>
         // Auto-hide alerts after 5 seconds
@@ -203,5 +287,225 @@
                 bsAlert.close();
             });
         }, 5000);
+
+        // Limpiar formulario cuando se cierra
+        var addPersonForm = document.getElementById('addPersonForm');
+        if (addPersonForm) {
+            addPersonForm.addEventListener('hidden.bs.collapse', function () {
+                var form = document.querySelector('#addPersonForm form');
+                if (form) {
+                    form.reset();
+                    form.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+                    form.querySelectorAll('.is-valid').forEach(el => el.classList.remove('is-valid'));
+                }
+            });
+        }
+
+        function removeNonNumeric(value) {
+            return value.replace(/\D/g, '');
+        }
+
+        function removeNonLetters(value) {
+            var regex = new RegExp('[^A-Za-zÀ-ÿ\\s]', 'g');
+            return value.replace(regex, '');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const identificationInput = document.getElementById('identification');
+            const firstNameInput = document.getElementById('firstName');
+            const lastNameInput = document.getElementById('lastName');
+            const emailInput = document.getElementById('email');
+            const phoneInput = document.getElementById('phone');
+            const salarioInput = document.getElementById('salario');
+
+            // Validación de identificación
+            if (identificationInput) {
+                identificationInput.addEventListener('input', function() {
+                    this.value = removeNonNumeric(this.value);
+                    
+                    if (this.value.length > 9) {
+                        this.value = this.value.substring(0, 9);
+                    }
+                    
+                    const numValue = parseInt(this.value);
+                    if (this.value && numValue > 0 && this.value.length <= 9) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de nombre
+            if (firstNameInput) {
+                firstNameInput.addEventListener('input', function() {
+                    this.value = removeNonLetters(this.value);
+                    
+                    if (this.value.trim().length > 0 && this.value.length <= 50) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value.length > 50) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de apellido
+            if (lastNameInput) {
+                lastNameInput.addEventListener('input', function() {
+                    this.value = removeNonLetters(this.value);
+                    
+                    if (this.value.trim().length > 0 && this.value.length <= 50) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value.length > 50) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de email
+            if (emailInput) {
+                emailInput.addEventListener('input', function() {
+                    var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                    if (emailRegex.test(this.value) && this.value.length <= 100) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de teléfono
+            if (phoneInput) {
+                phoneInput.addEventListener('input', function() {
+                    this.value = removeNonNumeric(this.value);
+                    
+                    if (this.value.length > 8) {
+                        this.value = this.value.substring(0, 8);
+                    }
+                    
+                    if (this.value.length === 8) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value.length > 0) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+
+            // Validación de salario
+            if (salarioInput) {
+                salarioInput.addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    if (value > 0) {
+                        this.classList.remove('is-invalid');
+                        this.classList.add('is-valid');
+                    } else if (this.value) {
+                        this.classList.add('is-invalid');
+                        this.classList.remove('is-valid');
+                    }
+                });
+            }
+        });
+
+        // Validación al enviar el formulario de persona
+        var createPersonForm = document.getElementById('createPersonForm');
+        if (createPersonForm) {
+            createPersonForm.addEventListener('submit', function(e) {
+                const identification = document.getElementById('identification');
+                const firstName = document.getElementById('firstName');
+                const lastName = document.getElementById('lastName');
+                const email = document.getElementById('email');
+                const phone = document.getElementById('phone');
+                const salario = document.getElementById('salario');
+                
+                let isValid = true;
+                let errorMessage = '';
+
+                // Validar identificación
+                const identValue = parseInt(identification.value);
+                if (!identification.value || identValue <= 0 || identification.value.length > 9) {
+                    identification.classList.add('is-invalid');
+                    errorMessage += '• La identificación debe ser válida (1-9 dígitos).\n';
+                    isValid = false;
+                }
+
+                // Validar nombre
+                var nameRegex = new RegExp('^[A-Za-zÀ-ÿ\\s]+$');
+                if (!firstName.value.trim() || firstName.value.length > 50 || !nameRegex.test(firstName.value)) {
+                    firstName.classList.add('is-invalid');
+                    errorMessage += '• El nombre es requerido, solo letras (máximo 50 caracteres).\n';
+                    isValid = false;
+                }
+
+                // Validar apellido
+                if (!lastName.value.trim() || lastName.value.length > 50 || !nameRegex.test(lastName.value)) {
+                    lastName.classList.add('is-invalid');
+                    errorMessage += '• El apellido es requerido, solo letras (máximo 50 caracteres).\n';
+                    isValid = false;
+                }
+
+                // Validar email
+                var emailRegex = /^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/;
+                if (!emailRegex.test(email.value) || email.value.length > 100) {
+                    email.classList.add('is-invalid');
+                    errorMessage += '• Por favor ingrese un email válido.\n';
+                    isValid = false;
+                }
+
+                // Validar teléfono (8 dígitos exactos)
+                if (phone.value.length !== 8) {
+                    phone.classList.add('is-invalid');
+                    errorMessage += '• El teléfono debe tener exactamente 8 dígitos.\n';
+                    isValid = false;
+                }
+
+                // Validar salario
+                const salarioValue = parseFloat(salario.value);
+                if (!salario.value || salarioValue <= 0) {
+                    salario.classList.add('is-invalid');
+                    errorMessage += '• El salario debe ser mayor a 0.\n';
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Por favor corrija los siguientes errores:\n\n' + errorMessage);
+                    return false;
+                }
+            });
+        }
+
+        // Función para confirmar eliminación
+        function confirmarEliminacion(identification, nombre) {
+            if (confirm('¿Está seguro que desea eliminar a ' + nombre + ' (ID: ' + identification + ')?\n\nEsta acción no se puede deshacer.')) {
+                document.getElementById('deleteIdentification').value = identification;
+                document.getElementById('deleteForm').submit();
+            }
+        }
+
+        // Event listener para botones de eliminar
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.delete-person-btn')) {
+                const button = e.target.closest('.delete-person-btn');
+                const identification = button.getAttribute('data-identification');
+                const name = button.getAttribute('data-name');
+                confirmarEliminacion(identification, name);
+            }
+        });
     </script>
 }

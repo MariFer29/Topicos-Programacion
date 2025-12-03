@@ -46,7 +46,17 @@ namespace PersonVehicleApi.Controllers
             try
             {
                 var result = await _adpersonRepository.AgreguePersonAsync(person);
-                return Ok(result);
+                var resultList = result.ToList();
+                
+                // Verificar si hay errores en la respuesta
+                if (resultList.Any() && resultList[0].id <= 0)
+                {
+                    // Si el id es 0 o negativo, significa que hubo un error
+                    return BadRequest(resultList[0].Mensaje);
+                }
+                
+                // Si el id es positivo, la persona fue creada exitosamente
+                return Ok(resultList[0].Mensaje);
             }
             catch (Exception ex)
             {

@@ -27,10 +27,10 @@ namespace PersonVehicle.BL
                 return Mensajes;
             }
 
-            // Validación: longitud de la cédula
-            if (person.Identification.ToString().Length != 9)
+            // Validación: longitud de la cédula (debe tener entre 1 y 9 dígitos)
+            if (person.Identification <= 0 || person.Identification.ToString().Length > 9)
             {
-                var Mensaje = new msjResp { id = -1, Mensaje = "❗La cédula de la persona no puede ser 0 ni tener más de 9 digitos." };
+                var Mensaje = new msjResp { id = -1, Mensaje = "❗La cédula de la persona debe tener entre 1 y 9 dígitos." };
                 var Mensajes = new List<msjResp>();
                 Mensajes.Add(Mensaje);
                 return Mensajes;
@@ -64,12 +64,10 @@ namespace PersonVehicle.BL
             }
 
             // Validación: teléfono correcto
-            if (person.Phone <= 0 || person.Phone < 9)
+            if (person.Phone.ToString().Length != 8)
             {
-                var Mensaje = new msjResp { id = -5, Mensaje = "❗El numero de telefono de la persona no puede ser 0 ni tener más de 8 digitos." };
-                var Mensajes = new List<msjResp>();
-                Mensajes.Add(Mensaje);
-                return Mensajes;
+                var Mensaje = new msjResp { id = -5, Mensaje = "❗El número de teléfono debe tener exactamente 8 dígitos." };
+                return new List<msjResp> { Mensaje };
             }
 
             // Validación: salario mayor a cero
@@ -101,6 +99,10 @@ namespace PersonVehicle.BL
             if (PersonaAMOdificar == null)
                 return $"❗La persona con la identificación {identification} no fue encontrada.";
 
+            // VALIDACIÓN: Teléfono debe ser exactamente 8 dígitos
+            if (dto.Phone < 10000000 || dto.Phone > 99999999)
+                return "❗El número de teléfono debe tener exactamente 8 dígitos.";
+
             // Actualización de campos
             PersonaAMOdificar.FirstName = dto.FirstName;
             PersonaAMOdificar.LastName = dto.LastName;
@@ -113,6 +115,7 @@ namespace PersonVehicle.BL
 
             return $"La persona con la identificación {identification} fue actualizada con éxito.";
         }
+
 
         // Eliminar una persona por identificación
         public async Task<String> EliminarPersonAsync(int identification)
